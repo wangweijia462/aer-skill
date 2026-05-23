@@ -26,14 +26,16 @@
 \doublespacing
 
 %% Title block
-\title{\textbf{Neural Network Stability and Climate-Induced Supply Chain
-Disruption Risk:\\[4pt]
+\title{\textbf{Neural Network Stability and Horizon-Dependent Prediction
+of Climate-Induced Supply Chain Risk:\\[4pt]
 Evidence from Chinese Listed Firms}%
-\thanks{We thank the original data creators whose replication materials
-underpin the empirical analysis.  All figures and statistics are computed from
-the Stata replication file using Python; no simulated outcome data are used.
+\thanks{All figures and statistics are computed from the Stata replication
+file using Python; no simulated outcome data are used.
+AI-assisted tools were used to support language editing and manuscript
+drafting; the author reviewed, verified, and takes full responsibility
+for all analyses, interpretations, code, and final text.
 Correspondence: \href{mailto:18522704823@163.com}{18522704823@163.com}.}}
-\author{Wang Weijia (王维佳)\thanks{School of Economics and Finance,
+\author{Wang Weijia\thanks{School of Economics and Finance,
 Xi'an Jiaotong University.}}
 \date{\today}
 
@@ -44,7 +46,7 @@ Xi'an Jiaotong University.}}
 \begin{abstract}
 \noindent
 Can a neural network reliably predict which supply-chain relationships
-break following climate shocks?  We test this question using 4,188
+break following climate shocks?  We address this question using 4,188
 customer-quarter observations from Chinese A-share listed firms (2011--2023),
 where the prediction target equals one when the cumulative net
 termination measure over the next four quarters is positive
@@ -53,21 +55,25 @@ A two-hidden-layer multilayer perceptron (MLP) trained on pre-2022 data
 achieves holdout AUC of 0.536 on the 2022--2023 test period; a logistic
 regression benchmark scores 0.544.  Rolling one-year-ahead AUCs range from
 0.516 to 0.578 across five evaluation windows, indicating that limited
-long-horizon predictability is a structural limitation of this task rather
-than an artifact of the test window.  Shorter horizons are more predictable:
-the MLP AUC is 0.668 for one-quarter disruption and 0.656 for two-quarter
-disruption.  Applying a normalized-parameter-distance stability framework, we
+long-horizon predictability is a structural property of this task rather
+than an artifact of the test window.  Predictability is strongly
+horizon-dependent: the MLP AUC is 0.668 for one-quarter disruption and
+0.656 for two-quarter disruption, before declining to 0.536 at four
+quarters.  Applying a normalized-parameter-distance stability framework, we
 show that successive MLP parameter vectors remain below the 95th-percentile
 null threshold from same-sample random-seed perturbations (maximum observed
-distance 0.49, threshold 1.53).  These results show that neural networks can
-be structurally stable even when long-horizon discrimination is weak, and that
-supply-chain climate-risk prediction is most useful at short horizons where
-observed financial and climate features retain predictive content before
-managerial adaptation and supplier substitution erode the signal.
+distance 0.490, threshold 1.534).  Model comparison, feature-group ablation,
+and architecture sensitivity tests jointly indicate that the four-quarter
+performance ceiling reflects feature informativeness rather than network
+capacity.  These results show that neural networks can be structurally stable
+even when long-horizon discrimination is weak, and that supply-chain
+climate-risk prediction is most useful at short horizons where observed
+financial and climate features retain predictive content before managerial
+adaptation and supplier substitution erode the signal.
 
 \medskip\noindent
 \textbf{Keywords:} climate risk; supply chain disruption; neural networks;
-model stability; Chinese listed firms; machine learning; computational economics
+model stability; machine learning; corporate risk prediction
 
 \medskip\noindent
 \textbf{JEL Codes:} C45, C53, G32, Q54
@@ -136,12 +142,13 @@ predictive accuracy is inherently limited.  Second, we document that static
 financial and climate variables provide only weak discriminative power for
 four-quarter bilateral relationship termination but stronger signal for
 one- and two-quarter disruption, quantifying how predictability decays with
-the forecast horizon.  Third, we show
-through risk-surface analysis that the MLP reveals model-implied
-associations between upstream climate exposure and supplier financing
-constraints that the simple logistic benchmark does not represent without
-explicit nonlinear terms---associations that may help prioritize further
-diagnostic analysis, though they should not be read as causal mechanisms.
+the forecast horizon.  Third, through model comparison, feature-group
+ablation, and architecture sensitivity analysis, we show that the
+four-quarter predictability ceiling is primarily a feature-informativeness
+constraint: no alternative classifier materially outperforms logistic
+regression, and neither varying the feature set nor expanding the network
+architecture improves discrimination, while MLP outperforms logit at the
+one-quarter horizon where feature information is more complete.
 
 The remainder of the paper is organized as follows.  Section~\ref{sec:lit}
 reviews related literature.  Section~\ref{sec:data} describes the data and
@@ -195,7 +202,7 @@ The Chinese mandatory-disclosure environment provides a rare panel, enabling
 the prediction exercise we carry out.  Our results illustrate a case where
 the prediction task is harder than standard credit risk: the observable
 predictors leave a large unmodeled residual, so that an MLP and a logit
-perform comparably.
+perform comparably at the four-quarter horizon.
 
 \subsection{Neural Network Stability and Reliability}
 
@@ -249,6 +256,46 @@ final sample of \textbf{4,188 customer-quarter observations} spanning
 2011--2023.  The sample grows markedly over time---from fewer than 200
 observations per year before 2015 to more than 800 in 2021--2022---reflecting
 expanding A-share disclosure requirements (Figure~\ref{fig:sample}).
+Table~\ref{tab:sample_construction} summarizes the sample construction
+and training--holdout split.
+
+\begin{table}[H]
+\centering
+\caption{Sample Construction}\label{tab:sample_construction}
+\begin{threeparttable}
+\small
+\begin{tabular}{lc}
+\toprule
+Step & Observations \\
+\midrule
+\multicolumn{2}{l}{\textit{Sample selection}} \\
+\quad Raw customer-quarter observations & --- \\
+\quad After removing missing termination indicators & --- \\
+\quad After removing missing prediction features & --- \\
+\quad \textbf{Final estimation sample} & \textbf{4,188} \\
+\midrule
+\multicolumn{2}{l}{\textit{Temporal split}} \\
+\quad Training sample (year $\leq$ 2021) & 2,945 \\
+\quad Holdout sample (2022--2023) & 1,243 \\
+\midrule
+\multicolumn{2}{l}{\textit{Outcome variable: $\textit{BreakRisk4Q}=1$}} \\
+\quad Positive-label rate, full sample & $\approx$0.490 \\
+\quad Positive-label rate, holdout & 0.560 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+  \small
+  \item \textit{Notes}: The final sample requires non-missing values for
+  all four forward termination indicators
+  ($\textit{Ter\_q\_q1}, \ldots, \textit{Ter\_q\_q4}$) and all 17
+  prediction features.  Rows marked ``---'' report intermediate filtering
+  counts that can be verified by running the data-loading script
+  (\texttt{appendix\_code/common.py}) against the original Stata file.
+  Training and holdout samples use a strict temporal split; no future data
+  enter the training set.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
 
 \subsection{Prediction Target}
 
@@ -342,10 +389,10 @@ to zero mean and unit variance before entering the network.  The (12,6)
 specification is a deliberately low-capacity architecture: with 2,945
 training observations and 17 input features, the 301 trainable parameters
 yield a ratio of approximately ten observations per parameter.
-Appendix~\ref{app:architecture} confirms that wider and deeper networks
+Appendix~\ref{app:architecture} shows that wider and deeper networks
 (up to 3,265 parameters) do not materially improve four-quarter holdout AUC,
-consistent with the view that feature informativeness rather than model
-capacity is the binding constraint.
+indicating that feature informativeness rather than model capacity is the
+binding constraint.
 
 Training uses Adam stochastic gradient descent with initial learning rate
 0.003 and L2 weight decay $\alpha = 0.01$.  We apply early stopping:
@@ -471,8 +518,8 @@ Figure~\ref{fig:prediction} shows the ROC and precision-recall curves.
 Both curves lie modestly above the diagonal (Panel A), and both
 precision-recall curves barely exceed the no-skill line at the observed
 rate of 0.560 (Panel B).  The near-overlap of the MLP and logit curves in
-both panels suggests that the nonlinearity in the MLP does not translate
-into a meaningful predictive gain in this application.
+both panels indicates that the nonlinearity in the MLP does not translate
+into a meaningful predictive gain for the four-quarter target.
 
 \paragraph{Interpretation.}
 The modest AUC is not a failure of the estimation procedure.
@@ -552,7 +599,7 @@ Panel A is a calibration plot: observations are binned into deciles of
 predicted probability and the observed positive-label rate per bin is
 plotted against the mean predicted probability.  The positive but imperfect
 slope---observed rates rise from 0.42 in the lowest decile to 0.60 in the
-highest, while predicted values range from 0.29 to 0.72---confirms
+highest, while predicted values range from 0.29 to 0.72---indicates
 directional information despite weak overall discrimination.  Calibration
 is imperfect in the middle deciles, where predictions near 0.50 yield
 observed rates between 0.49 and 0.56.
@@ -706,12 +753,12 @@ negligible relative to the available signal.
 
 The risk-surface analysis provides additional information about the
 \emph{shape} of the climate association.  The non-monotone pattern at high
-financing constraints (Panel A) suggests that the climate exposure--disruption
-relationship is conditioned by financing conditions in a way that
-permutation importance---which evaluates marginal contributions averaged
-over the holdout---does not capture.  These patterns warrant further
-investigation, but because the prediction task is underpowered and the
-surface reflects model-implied associations rather than causal effects,
+financing constraints (Panel A of Figure~\ref{fig:surface}) suggests that
+the climate exposure--disruption relationship is conditioned by financing
+conditions in a way that permutation importance---which evaluates marginal
+contributions averaged over the holdout---does not capture.  These patterns
+warrant further investigation, but because the prediction task is underpowered
+and the surface reflects model-implied associations rather than causal effects,
 strong economic conclusions about the mechanism should be deferred to
 studies with better identification.
 
@@ -802,6 +849,46 @@ the four-quarter horizon.  Future work should therefore enrich the feature set
 with network-topology and bilateral transaction data, and distinguish more
 carefully between short-run warning systems and longer-run relationship
 reorganization forecasts.
+
+%%==========================================================================
+%% STATEMENTS AND DECLARATIONS
+%%==========================================================================
+
+\section*{Statements and Declarations}
+
+\subsection*{Funding}
+The author declares that no funds, grants, or other support were received
+during the preparation of this manuscript.
+
+\subsection*{Competing Interests}
+The author has no relevant financial or non-financial interests to disclose.
+
+\subsection*{Author Contributions}
+Wang Weijia conceived the study, collected the data, designed and conducted
+the empirical analysis, wrote the manuscript, and approved the final version.
+The author had full access to all data in the study and takes full
+responsibility for the integrity of the data and the accuracy of the data
+analysis.
+
+\subsection*{Data Availability}
+The original Stata data used in this study are based on third-party
+replication materials and cannot be redistributed by the author.  The
+replication package contains all Python scripts, processed non-confidential
+outputs, figure source data, and result CSV files needed to verify the
+reported estimates.  Researchers with lawful access to the original Stata
+file can reproduce the full analysis by placing the file in the path
+specified in \texttt{data/README.md} of the replication archive.
+
+\subsection*{Code Availability}
+All Python scripts used to generate the empirical results, appendix tables,
+and figures are included in the replication package.  The package includes
+\texttt{requirements.txt}, a replication README with fixed random seeds and
+expected outputs, and CSV files for all reported appendix analyses.
+
+\subsection*{Use of AI-Assisted Tools}
+AI-assisted tools were used to support language editing, code organization,
+and manuscript drafting.  The author reviewed, verified, and takes full
+responsibility for all analyses, interpretations, code, and final text.
 
 %%==========================================================================
 %% REFERENCES
@@ -956,16 +1043,16 @@ Train cutoff & Eval year & Train $n$ & $d_t$ & Null $q_{0.95}$ & AUC \\
 Configuration & Horizon & AUC & Source \\
 \midrule
 \multicolumn{4}{l}{\textit{Four-quarter target (primary analysis)}} \\
-MLP (12,6) baseline     & 4 quarters & 0.536 & Table~\ref{tab:holdout} \\
-Logit (linear benchmark)& 4 quarters & 0.544 & Table~\ref{tab:holdout} \\
-Ridge logit (best alternative) & 4 quarters & 0.544 & Table~\ref{tab:appendix_model} \\
-Random forest           & 4 quarters & 0.542 & Table~\ref{tab:appendix_model} \\
-Architecture range (5 specs.) & 4 quarters & 0.529--0.557 & Table~\ref{tab:appendix_architecture} \\
+MLP (12,6) baseline          & 4 quarters & 0.536 & Table~\ref{tab:holdout} \\
+Logit (linear benchmark)     & 4 quarters & 0.544 & Table~\ref{tab:holdout} \\
+Ridge logit (best alternative)& 4 quarters & 0.544 & Table~\ref{tab:appendix_model} \\
+Random forest                & 4 quarters & 0.542 & Table~\ref{tab:appendix_model} \\
+Architecture range (5 specs.)& 4 quarters & 0.529--0.557 & Table~\ref{tab:appendix_architecture} \\
 \midrule
 \multicolumn{4}{l}{\textit{Short-horizon results (strongest positive finding)}} \\
-MLP (12,6)              & 1 quarter  & 0.668 & Table~\ref{tab:appendix_horizons} \\
-MLP (12,6)              & 2 quarters & 0.656 & Table~\ref{tab:appendix_horizons} \\
-Logit benchmark         & 1 quarter  & 0.624 & Table~\ref{tab:appendix_horizons} \\
+MLP (12,6)                   & 1 quarter  & 0.668 & Table~\ref{tab:appendix_horizons} \\
+MLP (12,6)                   & 2 quarters & 0.656 & Table~\ref{tab:appendix_horizons} \\
+Logit benchmark              & 1 quarter  & 0.624 & Table~\ref{tab:appendix_horizons} \\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
@@ -1185,8 +1272,9 @@ Gradient boosting   & 0.528 & {[0.497, 0.559]} & 0.586 & 0.264 \\
 The extended comparison does not show a clear four-quarter gain from more
 flexible classifiers.  Logit, ridge logit, random forest, and the baseline MLP
 all produce AUCs near 0.54, while gradient boosting performs slightly worse.
-The absence of any model that materially exceeds 0.544 confirms that the
-bottleneck is feature informativeness rather than model capacity.
+The absence of any model that materially exceeds 0.544 supports the
+interpretation that the bottleneck is feature informativeness rather than
+model capacity.
 
 %%--------------------------------------------------------------------------
 \section{Feature-Group Ablation}\label{app:ablation}
@@ -1228,8 +1316,8 @@ sets.  Climate-only MLP AUC is 0.492, below the random-classifier baseline,
 while finance-only MLP matches the full-model AUC at 0.536.  Adding climate
 variables to finance variables raises MLP AUC only slightly, from 0.536 to
 0.540.  The full 17-feature logit marginally outperforms the full 17-feature
-MLP (0.544 vs.\ 0.536), confirming that the four-quarter feature set is the
-binding constraint, not model architecture.
+MLP (0.544 vs.\ 0.536), consistent with the interpretation that the
+four-quarter feature set is the binding constraint, not model architecture.
 
 %%--------------------------------------------------------------------------
 \section{Alternative Forecast Horizons}\label{app:horizons}
@@ -1292,9 +1380,9 @@ cross-architecture Frobenius distances are not comparable.
 \toprule
 Architecture & Parameters & AUC & AP & Brier \\
 \midrule
-(8,)     & 153  & 0.552 & 0.612 & 0.253 \\
-(12,6)   & 301  & 0.536 & 0.598 & 0.252 \\
-(16,8)   & 433  & 0.529 & 0.579 & 0.257 \\
+(8,)     & 153   & 0.552 & 0.612 & 0.253 \\
+(12,6)   & 301   & 0.536 & 0.598 & 0.252 \\
+(16,8)   & 433   & 0.529 & 0.579 & 0.257 \\
 (32,16)  & 1,121 & 0.557 & 0.619 & 0.260 \\
 (64,32)  & 3,265 & 0.545 & 0.599 & 0.254 \\
 \bottomrule
@@ -1312,10 +1400,10 @@ Architecture & Parameters & AUC & AP & Brier \\
 Changing the width and depth of the MLP does not materially alter the
 four-quarter conclusion.  AUCs range from 0.529 to 0.557, with no monotone
 relationship between parameter count and predictive performance.  The smallest
-architecture, (8,), achieves the joint-highest AUC (0.552) alongside
-(32,16), while the largest (64,32) scores 0.545.  This non-monotone pattern
-confirms that the four-quarter predictability ceiling reflects feature
-informativeness, not network capacity.
+architecture, (8,), achieves the joint-highest AUC (0.552) alongside (32,16),
+while the largest (64,32) scores 0.545.  This non-monotone pattern is
+consistent with the interpretation that the four-quarter predictability ceiling
+reflects feature informativeness, not network capacity.
 
 %%--------------------------------------------------------------------------
 \section{Replication Note}\label{app:replication}
@@ -1331,7 +1419,7 @@ file is read via \texttt{pyreadstat}; figures are produced with
 Random seeds are as follows: the main MLP and logistic regression estimates
 use seed 42; the stability null distribution uses seeds 43--62; bootstrap
 resampling in Appendix~\ref{app:bootstrap} uses seed 0 with $B=1{,}000$
-draws.  The architecture sensitivity estimates in Appendix~\ref{app:architecture}
+draws; architecture sensitivity estimates in Appendix~\ref{app:architecture}
 also use seed 42 for each specification.
 
 To reproduce all results from a clean directory, place the original Stata

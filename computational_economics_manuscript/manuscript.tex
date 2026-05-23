@@ -3,6 +3,7 @@
 %% ── Packages ──────────────────────────────────────────────────────────────
 \usepackage[margin=1.25in]{geometry}
 \usepackage{amsmath,amssymb}
+\usepackage{bm}
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{caption}
@@ -17,6 +18,9 @@
 \usepackage{multirow}
 \usepackage{threeparttable}
 
+%% Figure path: change this one line to relocate figures when compiling locally
+\graphicspath{{../nn_supply_chain_figures/figures/}}
+
 \captionsetup{font=small, labelfont=bf, labelsep=period}
 \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
 \doublespacing
@@ -26,9 +30,9 @@
 Disruption Risk:\\[4pt]
 Evidence from Chinese Listed Firms}%
 \thanks{We thank the original data creators whose replication materials
-underpin the empirical analysis. All figures and statistics are computed from
-the Stata replication file using Python; no simulated outcome data are
-used. Correspondence: [author email].}}
+underpin the empirical analysis.  All figures and statistics are computed from
+the Stata replication file using Python; no simulated outcome data are used.
+Correspondence: [author email].}}
 \author{[Authors]}
 \date{\today}
 
@@ -38,32 +42,27 @@ used. Correspondence: [author email].}}
 %% ── Abstract ──────────────────────────────────────────────────────────────
 \begin{abstract}
 \noindent
-This paper studies whether a multilayer perceptron (MLP) neural network can
-reliably predict climate-induced supply chain disruption risk using 4,188
-customer-quarter observations of Chinese A-share listed firms over 2011--2023.
-The binary prediction target,
-$\textit{BreakRisk4Q} = \mathbf{1}\!\left\{\sum_{h=1}^{4}\textit{Ter\_q\_qh}>0\right\}$,
-flags observations in which at least one supply-chain relationship is
-terminated within the subsequent four quarters.  Training a two-hidden-layer
-MLP on pre-2022 data yields a holdout area under the ROC curve (AUC) of
-0.536 on the 2022--2023 test period, broadly comparable to a logistic
-regression benchmark (AUC~$=$~0.544), reflecting strong heterogeneity and
-unobservable relationship-level dynamics in climate-induced disruption
-episodes.  Rather than treating the modest predictive accuracy as the sole
-criterion, we adapt the normalized-parameter-distance stability framework to
-this domain.  Across five rolling one-year-ahead evaluation windows
-(2019--2023), every successive MLP parameter vector remains well below the
-95th-percentile null threshold constructed from same-sample random-seed
-perturbations (maximum observed distance~$=$~0.49 vs.\
-threshold~$=$~1.53), establishing structural stability.  Permutation
-importance places customer size, seasonal timing, and customer age as the
-dominant predictors; climate-finance exposure contributes positively but
-modestly.  Risk-surface analysis uncovers nonlinear interactions between
-climate exposure and supplier financing constraints that a linear model
-cannot capture.  Our framework offers a stability-first evaluation paradigm
-for machine-learning applications in climate risk assessment, and
-demonstrates that structural reliability and limited predictive accuracy can
-coexist in high-heterogeneity economic environments.
+Can a neural network reliably predict which supply-chain relationships
+break following climate shocks?  We test this question using 4,188
+customer-quarter observations from Chinese A-share listed firms (2011--2023),
+where the prediction target equals one when the cumulative net
+termination measure over the next four quarters is positive
+($\textit{BreakRisk4Q} = \mathbf{1}\!\{\sum_{h=1}^{4}\textit{Ter\_q\_qh}>0\}$).
+A two-hidden-layer multilayer perceptron (MLP) trained on pre-2022 data
+achieves holdout AUC of 0.536 on the 2022--2023 test period; a logistic
+regression benchmark scores 0.544.  Rolling one-year-ahead AUCs range from
+0.516 to 0.578 across five evaluation windows, indicating that limited
+predictability is a structural feature of this task rather than an artifact
+of the test window.  Applying a normalized-parameter-distance stability
+framework, we show that successive MLP parameter vectors remain consistently
+below the 95th-percentile null threshold derived from same-sample random-seed
+perturbations (maximum observed distance 0.49, threshold 1.53), confirming
+structural stability independently of predictive accuracy.  These results
+suggest that while static financial and climate observables provide only a
+weak discriminative signal for supply-chain disruption, neural network models
+trained on such data can be structurally stable---and documenting this
+stability is a necessary step before reporting the limits of machine learning
+in high-heterogeneity prediction tasks.
 
 \medskip\noindent
 \textbf{Keywords:} climate risk; supply chain disruption; neural networks;
@@ -79,95 +78,70 @@ model stability; Chinese listed firms; machine learning; computational economics
 \section{Introduction}
 %%==========================================================================
 
-The intersection of climate change and corporate supply chains has emerged as
-a central concern for financial stability.  Physical climate events---extreme
-precipitation, floods, droughts, and temperature anomalies---can disrupt
-production facilities, impair logistics networks, and force firms to terminate
-long-standing supplier relationships.  Simultaneously, the transition to a
-low-carbon economy reshapes financing conditions for energy-intensive
-industries, feeding back into supply-chain credit relationships.  Assessing
-these risks \emph{prospectively} is difficult: disruptions are rare and
-heterogeneous, data on bilateral supply-chain relationships are sparse, and
-the mechanisms linking aggregate climate shocks to firm-level relationship
-outcomes are complex and nonlinear.
+Can a neural network forecast which supply-chain relationships break after
+a climate shock?  In our Chinese listed-firm sample the answer is only
+partly yes.  A two-layer MLP is structurally stable across rolling samples,
+but its 2022--2023 holdout AUC is 0.536---slightly \emph{below} a logistic
+regression benchmark (AUC~$=$~0.544)---and rolling one-year-ahead AUCs
+fluctuate between 0.516 and 0.578, never exceeding 0.60.  We argue that
+this limited predictive gain is itself informative: it reflects strong
+unobservable components in supply-chain disruption decisions, and it
+motivates a stability-based evaluation approach that separates the question
+of \emph{how reliable is the model architecture} from the question of
+\emph{how much signal the features contain}.
 
-Machine learning, and neural networks in particular, offer a natural
-framework for forward-looking risk assessment in such settings.  Their
-capacity to approximate arbitrary nonlinear functions without imposing
-parametric structure makes them attractive when theory offers limited guidance
-on functional form \citep{hornik1989multilayer, lecun2015deep}.  The growing
-literature on machine learning in finance confirms that neural networks can
-improve predictive accuracy for asset returns, credit defaults, and corporate
-events \citep{gu2020empirical, khandani2010consumer}.  However, predictive
-accuracy alone is insufficient for reliable deployment.  A model that achieves
-high in-sample performance but whose parameters shift dramatically as new
-data arrive provides no stable risk signal; its predictions cannot be
-interpreted consistently across time.
+The data come from mandatory disclosures of Chinese A-share listed firms,
+which record bilateral customer-supplier relationships at a quarterly
+frequency \citep{original2024climate}.  We construct a four-quarter
+forward-looking disruption indicator based on the net change in relationship
+terminations, and train a two-hidden-layer MLP on 17 features covering
+upstream climate exposure, supplier financing constraints, customer
+financials, governance characteristics, and seasonal controls.  The
+training-test split is strictly temporal: no future data enter the training
+set at any evaluation point.
 
-This paper addresses a gap in the literature by applying a formal
-\emph{model-stability} diagnostic to neural network predictions of
-supply-chain disruption risk under climate stress.  Our approach follows the
-normalized-parameter-distance framework of \citet{stability2024framework},
-which defines model stability in terms of the Frobenius distance between
-successive parameter vectors, scaled by the parameter norm of a fixed
-reference model.  A null distribution of same-sample, random-seed distances
-provides a principled threshold: a model is deemed structurally stable if
-cross-period parameter distances fall below this threshold.
+The main predictive finding is that neither model provides strong
+discrimination.  The MLP AUC of 0.536 and average precision of 0.598 are
+broadly matched by logistic regression (AUC~$=$~0.544, AP~$=$~0.591).
+Permutation importance shows that customer size, seasonal timing, and
+customer age dominate the signal, while the upstream climate exposure
+variable and the city-level extreme-precipitation measure contribute
+positively but at a secondary level.  These results indicate that supply
+chain disruption under climate stress is largely mediated through firm
+fundamentals and relationship characteristics that cross-sectional static
+observables only partially capture.
 
-Using 17 firm- and relationship-level features---spanning climate-finance
-exposure, customer-city weather shocks, supplier financing constraints, and
-standard financial and governance characteristics---we train an MLP on
-Chinese A-share supply-chain data from \citet{original2024climate}.  The
-primary holdout evaluation covers 2022--2023, with rolling one-year-ahead
-evaluations extending back to 2019.  Our main findings are as follows.
+The main stability finding is that all five rolling MLP parameter vectors
+lie well below the stability threshold.  Normalized Frobenius distances
+from the 2018 reference model grow from 0.337 to 0.490 as training data
+accumulate, but the 95th-percentile null threshold constructed from 20
+same-data random-seed perturbations is 1.534---more than three times the
+largest observed distance.  This means that the parameter shift attributable
+to additional data is substantially smaller than the noise attributable to
+random initialization on the same data.  The MLP architecture therefore
+converges to a consistent set of parameters across sample expansions, even
+though accuracy remains modest.
 
-First, the MLP achieves a holdout AUC of 0.536 and average precision of
-0.598, closely matching a logistic regression benchmark (AUC~$=$~0.544,
-AP~$=$~0.591).  Neither model provides strong discriminative power, consistent
-with a signal environment dominated by unobservable relationship-level
-factors.  Rolling out-of-sample AUC fluctuates between 0.516 and 0.578,
-indicating that moderate and unstable predictability is a systematic feature
-of this prediction task, not merely an artifact of the holdout window.
-
-Second, and more importantly, model-stability diagnostics show that all five
-rolling parameter vectors lie well below the random-seed null threshold: the
-largest normalized distance is 0.49, compared with a 95th-percentile null of
-1.53.  This demonstrates that the MLP's internal architecture converges to a
-structurally stable representation despite growing training samples and
-shifting data distributions---a prerequisite for any consistent deployment.
-
-Third, permutation importance analysis reveals that customer size, seasonal
-patterns, and customer age dominate predictive contributions, while
-climate-finance exposure and city-level climate shocks play a positive but
-secondary role.  This suggests that supply-chain disruption under climate
-stress is primarily mediated through firm fundamentals rather than directly
-captured by current climate metrics.
-
-Fourth, model-implied risk surfaces reveal nonlinear interactions between
-climate-finance exposure and supplier financing constraints.  At low financing
-constraints, higher exposure is associated with \emph{lower} predicted
-disruption risk, consistent with a hedging or screening effect; at high
-constraints, the relationship becomes U-shaped, capturing a distinct
-vulnerability channel that linear models cannot represent.
-
-The paper makes three contributions.  \emph{Computationally}, we are the
-first to apply a formal parameter-distance stability framework to
-climate-induced supply-chain risk prediction, providing a replicable
-evaluation protocol for practitioners deploying neural networks in this
-domain.  \emph{Economically}, we document the limits of static financial and
-climate variables in predicting relationship-level disruptions, and show how
-financing constraints non-linearly condition the role of climate exposure.
-\emph{Methodologically}, we demonstrate that model-stability diagnostics and
-limited predictive accuracy are not contradictory: structural reliability is a
-necessary but not sufficient condition for useful deployment, and its
-assessment is informative independently of accuracy metrics.
+This paper makes three contributions.  First, we apply the
+normalized-parameter-distance stability framework of
+\citet{stability2024framework} to supply-chain climate risk prediction,
+showing how structural stability can be certified in a setting where
+predictive accuracy is inherently limited.  Second, we document that static
+financial and climate variables provide only weak discriminative power for
+bilateral relationship termination, quantifying the role of upstream climate
+exposure relative to conventional firm characteristics.  Third, we show
+through risk-surface analysis that the MLP reveals model-implied
+associations between upstream climate exposure and supplier financing
+constraints that the simple logistic benchmark does not represent without
+explicit nonlinear terms---associations that may be relevant for targeted
+credit review, though they should not be read as causal mechanisms.
 
 The remainder of the paper is organized as follows.  Section~\ref{sec:lit}
 reviews related literature.  Section~\ref{sec:data} describes the data and
-variable construction.  Section~\ref{sec:method} presents the neural network
+variable construction.  Section~\ref{sec:method} presents the model
 architecture and stability framework.  Section~\ref{sec:results} reports
-empirical results.  Section~\ref{sec:discussion} discusses implications.
-Section~\ref{sec:conclusion} concludes.
+empirical results.  Section~\ref{sec:discussion} discusses implications and
+limitations.  Section~\ref{sec:conclusion} concludes.
 
 %%==========================================================================
 \section{Related Literature}\label{sec:lit}
@@ -175,108 +149,78 @@ Section~\ref{sec:conclusion} concludes.
 
 \subsection{Climate Risk and Corporate Supply Chains}
 
-The economic literature on climate risk and firm behavior has developed
-rapidly.  At the macroeconomic level, \citet{acemoglu2012network} established
-that firm-level shocks propagate through production networks, generating
-aggregate fluctuations.  \citet{carvalho2021supply} provided direct empirical
-evidence for this mechanism using the 2011 Great East Japan Earthquake,
-demonstrating that supply-chain linkages transmit localized physical shocks to
-geographically distant firms.  These network propagation results underscore
-the systemic relevance of climate risk: extreme weather events can cascade
-through supplier networks well beyond the directly affected region.
+Aggregate climate events propagate through firm networks.
+\citet{acemoglu2012network} showed that shocks to individual firms ripple
+through production linkages to generate aggregate fluctuations, and
+\citet{carvalho2021supply} confirmed this mechanism empirically using the
+2011 Great East Japan Earthquake.  For climate risk specifically,
+\citet{dietz2016climate} and \citet{battiston2017climate} quantified the
+financial exposure of lending portfolios, while \citet{giglio2021climate}
+surveyed the growing literature on physical and transition risk in asset
+markets.  \citet{hong2019climate} found that climate risks are not yet
+fully priced into Chinese equities.
 
-The financial dimension of climate risk received foundational treatment in
-\citet{dietz2016climate} and \citet{battiston2017climate}, who quantified
-climate value at risk and the financial exposure of lending portfolios to
-climate transition risk.  Building on this, \citet{giglio2021climate} surveyed
-the finance literature on physical and transition risks, highlighting the
-challenge of mapping aggregate climate scenarios to firm-level outcomes.  For
-Chinese markets specifically, \citet{hong2019climate} found that climate risks
-are not yet fully priced into equities, suggesting that predictive models may
-uncover risk premia not yet reflected in market prices.
+At the firm level, \citet{hendricks2005empirical} documented persistent
+declines in shareholder value following supply-chain disruptions.
+\citet{original2024climate} established a causal link between extreme
+precipitation and supply-chain reorganization among Chinese listed firms,
+providing the data and motivation for our prediction exercise.  Our paper
+asks a different question from that causal analysis: not \emph{why}
+relationships break but whether the outcome can be predicted reliably in
+advance from observable covariates.  The answer---that it can only partially
+be predicted---highlights the gap between average causal effects and
+individual-level predictability.
 
-The supply-chain disruption literature has documented persistent negative
-effects on firm value.  \citet{hendricks2005empirical} showed that supply
-disruptions produce statistically and economically significant declines in
-shareholder value.  More recent work has linked climate events specifically to
-supply-chain reorganization \citep{original2024climate}, providing a
-causal foundation for the prediction target we study.  Our paper complements
-this causal strand by asking not \emph{why} disruptions occur but whether they
-can be predicted reliably in advance using observable firm and climate
-characteristics.
+\subsection{Machine Learning for Financial and Supply-Chain Prediction}
 
-\subsection{Machine Learning for Credit and Disruption Prediction}
+\citet{gu2020empirical} compared machine-learning methods for equity return
+prediction and found that neural networks improve over linear models when
+nonlinearity is present.  Their evaluation protocol---rolling out-of-sample
+windows with permutation-based feature importance---is the template we
+follow.  \citet{altman1994neural} and \citet{khandani2010consumer}
+established that neural networks can improve on discriminant analysis
+for bankruptcy and consumer credit risk, in settings where the signal
+is stronger than ours.
 
-The use of machine learning for financial prediction has grown substantially
-since the influential studies of \citet{altman1994neural} on neural network
-bankruptcy prediction and \citet{khandani2010consumer} on consumer credit
-risk.  \citet{gu2020empirical} provided a comprehensive benchmark comparison
-of machine-learning methods for equity return prediction, finding that neural
-networks consistently outperform linear models when nonlinearity is present in
-the data-generating process.  Their methodology---rolling out-of-sample
-evaluation with permutation-based feature importance---directly informs the
-evaluation protocol we adopt.
+Machine-learning approaches to supply-chain risk prediction remain less
+developed, partly because bilateral relationship-level data are scarce.
+The Chinese mandatory-disclosure environment provides a rare panel, enabling
+the prediction exercise we carry out.  Our results illustrate a case where
+the prediction task is harder than standard credit risk: the observable
+predictors leave a large unmodeled residual, so that an MLP and a logit
+perform comparably.
 
-For supply-chain applications, \citet{hendricks2005empirical} and subsequent
-work relied primarily on event-study methods rather than predictive modeling.
-Machine-learning approaches to supply-chain risk are less developed, partly
-because bilateral relationship-level data are scarce.  The availability of
-Chinese A-share mandatory disclosure requirements---which oblige listed firms
-to report major customers and suppliers---provides a rare panel of bilateral
-supplier-customer links at high frequency, enabling supervised classification
-of disruption risk \citep{original2024climate}.
+\subsection{Neural Network Stability and Reliability}
 
-Recent work has also applied neural networks to trade credit and firm
-financing \citep{love2003financial}.  Our paper extends this by incorporating
-climate variables into the prediction architecture, quantifying the marginal
-contribution of climate metrics relative to conventional financial predictors.
+The universal approximation theorem \citep{hornik1989multilayer} says that
+MLP networks can represent any continuous function, but it says nothing about
+whether gradient-based training produces stable solutions as the sample
+grows.  \citet{stability2024framework} propose measuring neural network
+stability via normalized Frobenius distances between successive parameter
+vectors, with same-data random-seed perturbations providing the null
+distribution.  We apply this test to a new domain and show that it can
+certify stability even when predictive accuracy is low---which is precisely
+the regime that makes the test most useful.
 
-\subsection{Neural Network Stability and Model Reliability}
-
-The reliability of neural network predictions over time is a central concern
-for any operational risk system.  The universal approximation theorem
-\citep{hornik1989multilayer} establishes that MLP networks with sufficient
-width can represent any continuous function, but it says nothing about whether
-solutions found by gradient-based training are stable as the sample grows.
-In finance, the fragility of machine-learning models to distributional shifts
-has been documented by \citet{gu2020empirical} and others, motivating explicit
-stability diagnostics.
-
-The parameter-distance framework adapted here follows
-\citet{stability2024framework}, who propose measuring neural network stability
-via the normalized Frobenius distance between weight matrices across training
-periods.  Critically, this approach generates an empirical null distribution
-from same-data random-seed perturbations, providing a principled threshold
-that accounts for optimization-induced variability.  Related ideas appear in
-the model selection literature (e.g., \citet{diebold1995comparing} on
-predictive accuracy comparisons) and in the machine-learning literature on
-solution stability \citep{breiman2001random}.
-
-The concept of stability we employ is distinct from predictive accuracy.
-A model can be structurally stable---converging to a consistent parameter
-region across samples---yet have low accuracy if the true signal is weak.
-Conversely, a high-accuracy model whose parameters shift dramatically as data
-accumulate provides an unreliable risk signal.  Our results illustrate the
-former case: stable architecture, modest signal, together suggesting that
-the feature set is informative but insufficient.
+Related evaluation ideas appear in \citet{diebold1995comparing} on
+predictive accuracy comparisons and in \citet{breiman2001random} on
+solution stability in ensemble methods.  The key conceptual point, common to
+all of these, is that stability and accuracy are separate properties: a model
+can be structurally stable yet carry weak signal, or highly accurate yet
+fragile to sample variation.
 
 \subsection{Chinese Supply-Chain Networks and Financing Constraints}
 
-China's mandatory disclosure requirements for concentrated customer and supplier
-relationships provide an unusually rich dataset for studying supply-chain
-dynamics \citep{original2024climate}.  Research on Chinese trade credit has
-documented that financing constraints amplify supply-chain disruptions,
-particularly for upstream suppliers who must finance inventory before receiving
-payment \citep{love2003financial}.  The interaction between climate shocks and
-financing constraints is therefore a central mechanism in the Chinese context:
-a climate event that temporarily impairs a supplier's cash flow may force
-relationship termination if the supplier cannot access external finance.
-
-Corporate governance characteristics---board independence, shareholder
-tunneling, and management quality---have been shown to influence trade-credit
-terms and relationship persistence in China.  We include these as controls,
-and their appearance in the permutation importance ranking is consistent with
-this literature.
+China's disclosure requirements for major customer and supplier
+relationships provide unusually granular data on bilateral supply-chain
+links \citep{original2024climate}.  \citet{love2003financial} documented
+that financing constraints amplify disruptions in developing-market supply
+chains, and the data here confirm that the interaction between upstream
+financing constraints and climate exposure shapes predicted disruption risk
+in ways that are not captured by a linear specification.  Governance
+characteristics---board independence, shareholder tunneling---appear in the
+permutation-importance ranking, consistent with the literature on
+Chinese trade credit that includes these controls.
 
 %%==========================================================================
 \section{Data and Variable Construction}\label{sec:data}
@@ -286,24 +230,19 @@ this literature.
 
 Our analysis uses the supply-chain reorganization panel constructed by
 \citet{original2024climate} from mandatory disclosures of Chinese A-share
-listed firms.  The dataset identifies bilateral customer-supplier relationships
-at a quarterly frequency and records relationship terminations.  The original
-data cover all A-share companies that reported a major customer or supplier
-relationship during the sample window.
-
-We restrict the analysis to observations for which all four future termination
-indicators $\textit{Ter\_q\_q1}, \ldots, \textit{Ter\_q\_q4}$ are observed
-(i.e., observations no later than four quarters before the end of the sample)
-and for which all 17 prediction features are non-missing.  This yields a final
-sample of \textbf{4,188 customer-quarter observations} spanning 2011--2023.
-The sample grows markedly over time, from fewer than 200 observations per year
-before 2015 to more than 800 in 2021--2022, reflecting China's expanding
-disclosure requirements (Figure~\ref{fig:sample}).
+listed firms.  The dataset identifies bilateral customer-supplier
+relationships at a quarterly frequency and records net relationship
+terminations.  We restrict to observations for which all four forward
+termination indicators ($\textit{Ter\_q\_q1}, \ldots, \textit{Ter\_q\_q4}$)
+are available and all 17 prediction features are non-missing, yielding a
+final sample of \textbf{4,188 customer-quarter observations} spanning
+2011--2023.  The sample grows markedly over time---from fewer than 200
+observations per year before 2015 to more than 800 in 2021--2022---reflecting
+expanding A-share disclosure requirements (Figure~\ref{fig:sample}).
 
 \subsection{Prediction Target}
 
-The prediction target is a binary indicator of four-quarter forward supply
-chain disruption risk:
+The prediction target is:
 \begin{equation}
 \textit{BreakRisk4Q}_{i,t}
 = \mathbf{1}\!\left\{
@@ -311,73 +250,73 @@ chain disruption risk:
   \right\},
 \label{eq:target}
 \end{equation}
-where $\textit{Ter\_q\_qh}_{i,t}$ equals one if the customer-firm $i$
-terminates at least one major supplier relationship in quarter $t+h$.
-$\textit{BreakRisk4Q}$ thus captures any disruption over the next
-twelve months, a horizon relevant for strategic procurement and financing
-decisions.
+where each $\textit{Ter\_q\_qh}_{i,t}$ is the net change in the number of
+terminated focal-firm relationships for customer $i$ in quarter $t+h$.
+The sum can take negative values (net new relationships) or positive values
+(net terminations), so the indicator equals one when the cumulative net
+termination measure over the next four quarters is positive---not simply
+when any single relationship ends.  This construction captures a twelve-month
+horizon relevant for procurement and financing decisions.
 
-The observed disruption rate in the full sample averages approximately 49\%
-across years.  In the 2022--2023 holdout period the rate is 56.0\%, reflecting
-elevated supply-chain stress in that period.  The high base rate---considerably
-above 50\%---implies that a naive majority-class classifier would achieve
-precision near 0.56 without any predictive information; meaningful improvement
-over this baseline requires models that discriminate among firms within the
-disruption-prone environment.
+The observed positive-label rate averages about 49\% across the full
+sample and is 56.0\% in the 2022--2023 holdout, reflecting elevated
+supply-chain stress in that period.  A majority-class classifier would
+achieve precision near 0.56 with no predictive information; useful
+predictions must discriminate among firms within this disruption-prone
+environment.
 
 \subsection{Features}
 
-Table~\ref{tab:features} summarizes the 17 input features, grouped into four
-conceptual categories.
+Table~\ref{tab:features} lists the 17 input features in four groups.
 
-\paragraph{Climate and Exposure Variables.}
-\emph{Affected} ($\hat\alpha_i$) measures the customer firm's climate-finance
-exposure, constructed from the overlap between the firm's bank lending
-relationships and the banks' exposure to climate-sensitive industries
-\citep{original2024climate}.  \emph{Climate\_CityC} is the extreme-weather
-shock intensity experienced by the customer's registered city, normalized to
-the empirical support.  \emph{Affected\_x\_S\_FC} is the interaction of the
-climate-finance exposure and the supplier financing constraint.
+\paragraph{Climate and Upstream Exposure.}
+\emph{Affected} indicates that the customer's upstream focal firm
+simultaneously faced financing constraints \emph{and} was exposed to
+extreme precipitation shocks during the observation period, following the
+construction in \citet{original2024climate}.  It is the key exposure
+variable: it captures the double-stress condition that the original paper
+identifies as the primary mechanism for forced supply-chain reorganization.
+\emph{Climate\_CityC} is the log intensity of extreme precipitation in the
+customer's registered city.  \emph{Affected\_x\_S\_FC} is the interaction
+of the upstream exposure indicator with the supplier financing constraint.
 
 \paragraph{Supply-Chain Characteristics.}
-\emph{S\_FC} (supplier financing constraint) measures the degree to which the
-firm's key suppliers face binding credit constraints, proxied by their
-dependence on trade credit relative to bank finance.  \emph{C\_Duration}
-captures the length of the customer-supplier relationship in quarters.
+\emph{S\_FC} (supplier financing constraint) measures the degree to which
+the firm's key suppliers face binding credit constraints.
+\emph{C\_Duration} captures relationship length in quarters.
 
 \paragraph{Customer Financial Characteristics.}
 Five accounting variables describe the customer firm: \emph{C\_Size} (log
 total assets), \emph{C\_Lev} (leverage ratio), \emph{C\_Inv} (inventory
-intensity), \emph{C\_Ppe} (fixed-asset intensity), and \emph{C\_Firmage} (firm
-age since listing).
+intensity), \emph{C\_Ppe} (fixed-asset intensity), and \emph{C\_Firmage}
+(firm age since listing).
 
 \paragraph{Governance and Temporal Variables.}
-Governance controls include board size (\emph{C\_Board}), the proportion of
-independent directors (\emph{C\_Indep}), a tunneling measure
-(\emph{C\_Occupy}), and trading frequency (\emph{C\_Frequency}).  Three
-temporal variables capture the year (\emph{year\_c}, demeaned) and within-year
-seasonality via sine and cosine transformations of the fiscal quarter
-(\emph{quarter\_sin}, \emph{quarter\_cos}).
+Governance controls are board size (\emph{C\_Board}), proportion of
+independent directors (\emph{C\_Indep}), a shareholder-tunneling
+indicator (\emph{C\_Occupy}), and customer-supplier transaction
+frequency (\emph{C\_Frequency}).  Three temporal variables capture the
+calendar year (\emph{year\_c}, demeaned) and within-year seasonality via
+sine and cosine encodings of the quarter (\emph{quarter\_sin},
+\emph{quarter\_cos}).
 
 \subsection{Descriptive Statistics}
 
-Figure~\ref{fig:sample} documents two key temporal patterns.  Panel A shows
-the annual disruption rate, which varies from 0.42 to 0.58 across years with
-no clear monotone trend, confirming that supply-chain disruption is a
-persistent phenomenon rather than a temporary shock.  The elevated rate in
-2022 (0.580) coincides with COVID-19 supply-chain aftershocks and increased
-geopolitical uncertainty.
+Figure~\ref{fig:sample} documents the prediction environment.  Panel A
+shows the annual positive-label rate, which ranges from 0.42 to 0.58 with
+no clear trend, confirming that net positive terminations are a persistent
+feature of the sample rather than a spike concentrated in one period.  The
+rate rises to 0.580 in 2022, consistent with post-pandemic supply-chain
+dislocations and heightened geopolitical uncertainty.
 
-Panel B plots the mean of the two climate variables.  The climate-finance
-exposure variable (Affected) was higher in the early part of the sample
-(above 0.23 during 2014--2016) and has declined to 0.085 by 2023, consistent
-with reductions in bank lending to climate-sensitive industries.  The
-customer-city climate shock (Climate\_CityC) peaks around 2016 (0.517) and
-also declines in 2023 (0.175).  The temporal co-movement of these two
-variables reflects China's simultaneous restructuring of green finance
-policy and its exposure to shifting precipitation and temperature patterns.
-Light bars in Panel B flag years with fewer than 50 observations, where
-the sample means should be interpreted cautiously.
+Panel B plots the annual means of the two climate variables.  The upstream
+exposure variable (Affected) is highest in 2014--2016 (sample mean above
+0.23) and falls to 0.085 by 2023, reflecting the gradual tightening of
+Chinese green-finance policy that directed bank credit away from
+climate-sensitive industries.  The customer-city extreme-precipitation
+variable (Climate\_CityC) peaks around 2016 and also declines in 2023.
+Light bars flag years with fewer than 50 observations, where sample means
+are less reliable.
 
 %%==========================================================================
 \section{Neural Network Methodology and Stability Framework}\label{sec:method}
@@ -385,111 +324,104 @@ the sample means should be interpreted cautiously.
 
 \subsection{Multilayer Perceptron Classifier}
 
-We train a two-hidden-layer multilayer perceptron (MLP) with 12 neurons in
-the first layer and 6 in the second, both using rectified linear unit (ReLU)
-activations \citep{lecun2015deep}.  The output layer applies a logistic
-sigmoid to yield a predicted disruption probability.  All input features are
-standardized to zero mean and unit variance before entering the network.
+We train a two-hidden-layer MLP with 12 neurons in the first hidden layer
+and 6 in the second, both with rectified linear unit (ReLU) activations
+\citep{lecun2015deep}.  The output layer uses a logistic sigmoid to
+produce a predicted disruption probability.  All inputs are standardized
+to zero mean and unit variance before entering the network.
 
-The MLP is trained by Adam stochastic gradient descent with an initial
-learning rate of 0.003 and L2 weight decay $\alpha = 0.01$.  To prevent
-overfitting, we use early stopping: 15\% of the training data is held out as
-a validation set, and training stops after 30 consecutive epochs without
-improvement in validation loss (maximum 1,500 epochs).  The random seed is
-fixed to 42 for all main-specification estimates, and we vary the seed across
-20 draws for the null distribution (Section~\ref{subsec:stability}).  All
-estimation uses the \texttt{scikit-learn} implementation \citep{pedregosa2011}.
+Training uses Adam stochastic gradient descent with initial learning rate
+0.003 and L2 weight decay $\alpha = 0.01$.  We apply early stopping:
+15\% of training observations form a validation set, and training halts
+after 30 consecutive epochs without improvement in validation loss (maximum
+1,500 epochs).  The random seed is fixed at 42 for all main estimates;
+20 additional seeds (43--62) are used for the null distribution
+(Section~\ref{subsec:stability}).  All estimation uses
+\texttt{scikit-learn} \citep{pedregosa2011}.
 
-The logistic regression benchmark uses the identical feature set and
-standardization pipeline, estimated by LBFGS with a maximum of 1,000
-iterations.  It serves as a transparent linear benchmark---not as a competing
-model to be optimized---to contextualise the neural network's performance.
+The logistic regression benchmark uses the same feature set and
+standardization pipeline, estimated by LBFGS (maximum 1,000 iterations).
+It serves as a transparent linear reference to contextualize the MLP's
+performance, not as a competing model to optimize.
 
 \subsection{Train-Test Protocol}
 
-We adopt two complementary evaluation protocols.
-
 \paragraph{Primary holdout.}
 The model is trained on all observations with year $\leq 2021$ (2,945
-observations) and evaluated on 2022--2023 (1,243 observations).  This
-temporal split mirrors deployment conditions: a practitioner fitting a model
-at end-2021 would apply it to subsequent realizations.
+observations) and evaluated on 2022--2023 (1,243 observations), mirroring
+deployment conditions for a practitioner fitting the model at end-2021.
 
 \paragraph{Rolling one-year-ahead evaluation.}
-For $t \in \{2018, 2019, 2020, 2021, 2022\}$, we train on all observations
-with year $\leq t$ and evaluate on year $t+1$ alone.  This protocol
-produces five test windows with evaluation years 2019--2023.  We require
-at least 50 test observations and at least two outcome classes in both train
-and test sets for a window to be included; all five windows satisfy these
-criteria.
+For each training cutoff $t \in \{2018, 2019, 2020, 2021, 2022\}$, we
+train on year $\leq t$ and evaluate on year $t+1$.  We require at least 50
+test observations and both outcome classes present in train and test; all
+five windows satisfy these criteria.
 
 \subsection{Evaluation Metrics}
 
-We report three metrics: (i) the area under the ROC curve (AUC), which
-measures rank-order discrimination and is invariant to the decision threshold;
-(ii) average precision (AP), which summarises the precision-recall trade-off
-and is sensitive to the proportion of positive cases; and (iii) the Brier
-score, which measures calibrated probability accuracy.  Because the class
-balance fluctuates across windows (observed rates 0.47--0.58), AUC is the
-primary discriminative metric; AP and Brier score provide complementary
-calibration evidence.
-
-An AUC of 0.5 corresponds to a random classifier.  Given the high and
-variable base rate of disruption, consistent AUC above 0.5 across all rolling
-windows is the relevant standard for meaningful predictive information.
+We report: (i) AUC, the area under the ROC curve, which measures
+rank-order discrimination independently of the decision threshold;
+(ii) average precision (AP), which summarizes the precision-recall
+trade-off; and (iii) Brier score, measuring squared probability error.
+AUC is the primary metric because class balance fluctuates across windows
+(observed rates 0.47--0.58).  AUC of 0.5 is the random-classifier
+baseline; consistent values above 0.5 across all windows indicate that
+observable features carry some forward-looking information.
 
 \subsection{Stability Framework}\label{subsec:stability}
 
-Following \citet{stability2024framework}, we assess structural model stability
-by computing normalized parameter distances between successive MLP estimates.
-Let $\bm{\theta}_t$ denote the vector formed by concatenating all weight
-matrices and bias vectors of the MLP trained through year $t$.  Define the
-normalized Frobenius distance from a reference model trained through 2018:
+Following \citet{stability2024framework}, we assess structural model
+stability by computing normalized parameter distances between successive
+MLP estimates.  Let $\bm{\theta}_t$ be the vector formed by concatenating
+all weight matrices and bias vectors of the MLP trained through year $t$.
+Define the normalized Frobenius distance from the 2018 reference model:
 \begin{equation}
 d_t = \frac{\|\bm{\theta}_t - \bm{\theta}_{2018}\|}{\|\bm{\theta}_{2018}\|},
 \label{eq:distance}
 \end{equation}
-where $\|\cdot\|$ denotes the Euclidean (Frobenius) norm of the vectorized
-parameters.
+where $\|\cdot\|$ denotes the Euclidean norm of the vectorized parameters.
 
-To construct a principled null distribution, we train 20 additional MLP models
-on the same 2018 reference data, varying only the random seed (seeds 43--62).
-Each null model's distance from the reference yields a null distance.  The
-95th percentile of these 20 null distances, $q_{0.95}^{\text{null}}$, defines
-the stability threshold: if $d_t < q_{0.95}^{\text{null}}$ for all $t$, the
-model is deemed structurally stable---meaning that the variation in parameters
+The null distribution is constructed by training 20 additional MLP models
+on the \emph{same} 2018 reference data with different random seeds (43--62)
+and recording each model's distance from the reference.  The 95th percentile
+of these 20 distances, $q_{0.95}^{\text{null}}$, is the stability threshold.
+If $d_t < q_{0.95}^{\text{null}}$ for all $t$, the parameter variation
 attributable to new data is no larger than the variation attributable to
-random initialization on the same data.
+random initialization on the same data; we describe this as structural
+stability.
 
-This test has a clear economic interpretation.  A model that fails the
-threshold is one whose internal representation shifts so substantially with
-new data that it effectively becomes a different model, making historical
-performance evidence unreliable for future deployment.  Passing the test does
-not guarantee high accuracy but is a necessary condition for interpretability
-and consistent risk signalling.
+Passing the threshold does not imply high accuracy.  It implies that
+the model's internal representation of the prediction problem is
+consistent across sample expansions---a prerequisite for interpreting
+historical performance as evidence about future behavior.
 
 \subsection{Feature Importance}
 
-We assess feature contributions via permutation importance \citep{breiman2001random}.
-For each feature $j$ in the holdout test set, we permute its values 50 times
-across observations, record the AUC on each permuted dataset, and compute the
-mean AUC loss relative to the original.  A large positive AUC loss indicates
-a feature that contributes substantially to discrimination; negative values
-indicate features whose permutation coincidentally improves (or does not
-harm) AUC in this sample.  Error bars report 95\% simulation intervals across
-the 50 permutations.
+We assess feature contributions via permutation importance
+\citep{breiman2001random}.  For each feature $j$ in the holdout test set,
+we permute its values 50 times, record the AUC on each permuted dataset,
+and compute the mean AUC loss relative to the original.  Large positive
+AUC loss indicates meaningful discriminative contribution; negative values
+indicate features that add no useful information conditional on the rest.
+Error bars report 95\% simulation intervals across permutations.
 
 \subsection{Risk Surface Analysis}
 
-To visualise the model's nonlinear predictions, we compute risk surfaces over
-the 2022--2023 holdout covariate distribution.  For Panel A, we vary the
-climate-finance exposure (Affected) from 0 to 1 across an evenly spaced grid,
-fixing supplier financing constraints at three representative levels
-(\emph{S\_FC}~$\in \{0, 0.5, 1\}$), updating the interaction term
-\emph{Affected\_x\_S\_FC} consistently, and averaging predicted probabilities
-over the observed holdout distribution of all remaining features.  Panel B
-sweeps the customer-city climate shock (Climate\_CityC) across its empirical
-support while marginalizing over all other features.
+To visualize the model's nonlinear predictions we compute risk surfaces
+over the 2022--2023 holdout covariate distribution.  For Panel A of
+Figure~\ref{fig:surface}, we vary upstream climate exposure (Affected)
+from 0 to 1 across an evenly spaced grid, fix supplier financing
+constraints at three representative levels
+($\textit{S\_FC} \in \{0, 0.5, 1.0\}$), update the interaction term
+consistently, and average predicted probabilities over the observed
+distribution of all remaining features.  Panel B sweeps the
+customer-city extreme-precipitation variable (Climate\_CityC) across
+its empirical support while marginalizing over other features.
+
+These surfaces show model-implied associations in the holdout data.
+They are descriptive: they summarize how the trained model responds to
+the two climate-related inputs and should not be interpreted as
+estimates of causal effects.
 
 %%==========================================================================
 \section{Empirical Results}\label{sec:results}
@@ -497,319 +429,287 @@ support while marginalizing over all other features.
 
 \subsection{Sample Facts}
 
-Figure~\ref{fig:sample} and Table~\ref{tab:rolling} document the prediction
-environment.  The total sample of 4,188 customer-quarter observations is
-heavily weighted toward 2019--2023, reflecting the expanding A-share coverage
-of supply-chain disclosures.  The disruption rate fluctuates in a narrow band
-of 0.42--0.58 across most years, indicating near-balanced classes in every
-evaluation window.  The two climate variables---climate-finance exposure and
-customer-city climate shock---display a common downward trend in the early
-2020s, possibly reflecting green-finance reforms that shifted bank lending
-away from carbon-intensive industries and recent moderation in extreme weather
-events in major industrial cities.
+Figure~\ref{fig:sample} and Table~\ref{tab:rolling} characterize the
+prediction environment.  The 4,188 observations are concentrated in
+2019--2023, consistent with the expanding A-share disclosure coverage.
+The positive-label rate is near-balanced in every evaluation window
+(0.42--0.58), so neither class dominates.  The two climate variables trend
+downward in the early 2020s, possibly reflecting green-finance reforms and
+shifting precipitation patterns; most observations carry moderate rather
+than extreme climate readings.
 
 \subsection{Out-of-Sample Predictive Performance}
 
-Table~\ref{tab:holdout} reports holdout metrics for the primary 2022--2023
-evaluation.  The MLP achieves an AUC of \textbf{0.536}, average precision of
-\textbf{0.598}, and a Brier score of \textbf{0.252}.  The logistic regression
-benchmark yields AUC 0.544, AP 0.591, and Brier 0.250.  The models perform
-comparably across all three metrics, with logistic regression marginally ahead
-on AUC and Brier score while the MLP achieves slightly higher average
-precision.  Neither model offers a decisive advantage over the other on the
-holdout, and neither provides strong discrimination above the 0.5 baseline.
+Table~\ref{tab:holdout} reports holdout metrics.  The MLP achieves AUC
+\textbf{0.536}, average precision \textbf{0.598}, and Brier score
+\textbf{0.252}.  Logistic regression yields AUC 0.544, AP 0.591, and Brier
+0.250.  The two models perform comparably across all three metrics, with
+logistic regression marginally ahead on AUC and Brier score and the MLP
+marginally ahead on average precision.  Neither model provides strong
+discrimination, and the nonlinear MLP architecture offers no decisive
+advantage over the linear benchmark on this feature set.
 
-Figure~\ref{fig:prediction} presents the ROC and precision-recall curves.
-Panel A shows that both curves lie modestly above the diagonal, confirming
-above-random but limited rank-ordering capability.  The closeness of the two
-curves indicates that the nonlinear architecture of the MLP does not provide
-a meaningful advantage over a linear decision boundary on this feature set.
-Panel B shows precision-recall curves that barely exceed the no-skill line
-(the horizontal line at the observed rate of 0.560), consistent with the
-modest AP values.
+Figure~\ref{fig:prediction} shows the ROC and precision-recall curves.
+Both curves lie modestly above the diagonal (Panel A), and both
+precision-recall curves barely exceed the no-skill line at the observed
+rate of 0.560 (Panel B).  The near-overlap of the MLP and logit curves in
+both panels confirms that the nonlinearity in the MLP does not translate
+into a meaningful predictive gain in this application.
 
 \paragraph{Interpretation.}
-The modest AUC values are not a failure of the estimation procedure.  The
-rolling evaluation (Table~\ref{tab:rolling} and the upper panel of
-Figure~\ref{fig:calibration}) confirms that AUC fluctuates between 0.516 and
-0.578 across five separate evaluation years, none reaching 0.60.  This
-consistency across windows indicates that limited predictability is a
-structural feature of the prediction problem rather than an artifact of the
-holdout window.  Supply-chain disruption decisions depend on unobservable
-contractual terms, relationship-specific shocks, and managerial responses that
-cross-sectional financial and climate variables cannot capture.  The AUC
-values are nonetheless consistently above 0.5, establishing that observable
-firm and climate characteristics carry \emph{some} forward-looking
-information.
+The modest AUC is not a failure of the estimation procedure.
+Table~\ref{tab:rolling} shows that rolling one-year-ahead AUCs fluctuate
+between 0.516 and 0.578 across five separate evaluation years, never
+reaching 0.60.  This consistency across windows indicates that limited
+predictability is a structural feature of the task.  Supply-chain
+disruption decisions reflect unobservable contractual terms,
+relationship-specific dynamics, and managerial responses that
+cross-sectional static observables only partially capture.  The AUC
+values are consistently above 0.5, showing that observable firm and
+climate characteristics carry \emph{some} forward-looking information,
+but the signal is weak.
 
 \subsection{Calibration and Residual Diagnostics}
 
-Figure~\ref{fig:calibration} presents two diagnostic panels for the rolling
-predictions.
+Figure~\ref{fig:calibration} presents two diagnostic panels.
 
-Panel A displays a calibration plot in which observations are binned by
-decile of predicted probability.  The observed disruption rate in each bin
-is plotted against the mean predicted probability.  The positive but
-imperfect slope---rising from an observed rate of 0.42 in the bottom decile
-to 0.60 in the top decile, while the predicted values range from 0.29 to
-0.72---confirms that the model's predicted probabilities carry directional
-information about actual disruption risk despite the weak overall
-discrimination.  The calibration is imperfect in the middle deciles, where
-predicted probabilities of approximately 0.50 yield observed rates between
-0.49 and 0.56.
+Panel A is a calibration plot: observations are binned into deciles of
+predicted probability and the observed positive-label rate per bin is
+plotted against the mean predicted probability.  The positive but imperfect
+slope---observed rates rise from 0.42 in the lowest decile to 0.60 in the
+highest, while predicted values range from 0.29 to 0.72---confirms
+directional information despite weak overall discrimination.  Calibration
+is imperfect in the middle deciles, where predictions near 0.50 yield
+observed rates between 0.49 and 0.56.
 
-Panel B plots the autocorrelation function (ACF) of quarterly mean residuals
-(observed minus predicted) from the rolling predictions.  Most ACF values
-lie within the $\pm 1.96/\sqrt{T}$ band.  The notable exception is lag 7
-(ACF~$= 0.31$), suggesting a residual semi-annual or annual structure not
-fully captured by the quarter-cycle encoding.  Lags 1--5 show mild negative
-autocorrelation (approximately $-0.07$ to $-0.13$), consistent with slight
-mean reversion in prediction errors across consecutive quarters.  Overall,
-no strong positive autocorrelation at short horizons indicates that the
-model is not systematically under- or over-predicting across consecutive
-periods.
+Panel B plots the autocorrelation function (ACF) of quarterly mean
+residuals from the rolling predictions.  Most lags fall within the
+$\pm 1.96/\sqrt{T}$ band.  The notable exception is lag 7 (ACF~$= 0.31$),
+suggesting an annual or semi-annual structure in the disruption process
+not captured by the quarter-cycle encoding.  Lags 1--5 show mild negative
+autocorrelation ($-0.07$ to $-0.13$), consistent with slight mean reversion
+in prediction errors.  The absence of strong positive autocorrelation at
+short lags indicates the model does not systematically over- or
+under-predict in consecutive periods.
 
 \subsection{Model Stability}
 
-Figure~\ref{fig:stability} presents the key stability results.  Panel A plots
-normalized parameter distances $d_t$ as a function of the training cutoff year,
-alongside the 95th-percentile null threshold $q_{0.95}^{\text{null}} = 1.534$.
+Figure~\ref{fig:stability} and Table~\ref{tab:stability} report stability
+diagnostics.  Panel A plots $d_t$ alongside the null threshold
+$q_{0.95}^{\text{null}} = 1.534$.
 
-Crucially, every $d_t$ lies far below the threshold.  The distances grow
+Every $d_t$ is well below the threshold.  The distances increase
 monotonically from 0.337 (cutoff 2019) to 0.490 (cutoff 2022), reflecting
-that additional training data shift the model parameters away from the 2018
-reference.  But the largest observed distance (0.490) is less than one-third
-of the stability threshold (1.534).  For comparison, the null distribution
-(20 same-data, different-seed models) yields distances ranging from 1.27 to
-1.66, all substantially larger than the actual cross-period distances.  This
-implies that the signal from additional training data is \emph{weaker} than
-the noise introduced by changing the random initialization seed on the same
-data---a strong stability result.
+that added data shift parameters away from the 2018 reference.  But the
+largest distance (0.490) is less than one-third of the null threshold
+(1.534).  For comparison, the 20 same-data null models yield distances of
+1.27--1.66---all substantially above the cross-period distances.  The
+parameter shift attributable to new data is therefore smaller than the
+noise from changing the random seed on the same data: a clear stability
+result.
 
-Panel B shows the corresponding rolling one-year-ahead AUC (solid circles).
-The AUC fluctuates between 0.516 and 0.578, with no monotone trend, confirming
-that the stability of parameter distances does not translate into steadily
-improving accuracy.  The juxtaposition of stable parameters (Panel A) and
-modest, fluctuating accuracy (Panel B) illustrates the key message: structural
-model stability is a well-defined property that can be confirmed independently
-of predictive precision.
+Panel B shows rolling one-year-ahead AUC, which fluctuates between 0.516
+and 0.578 with no monotone trend.  The stable parameters in Panel A do
+not translate into improving accuracy in Panel B, which is consistent with
+the interpretation that the feature set constrains accuracy, not the model
+architecture.
 
-\paragraph{Economic interpretation.}
-The stability finding implies that the model's learned representation of the
-relationship between firm characteristics, climate exposure, and disruption
-risk does not fundamentally change as data accumulate.  This is consistent
-with a stable underlying economic mechanism---the effect of climate-finance
-exposure and financing constraints on supply-chain fragility---even as the
-sample-specific realization of that mechanism varies.  Practitioners can
-therefore interpret predictions from models trained in different periods as
-reflecting the same underlying model, rather than a different architecture
-each year.
+\paragraph{Note on interpretation.}
+The stability result says that the model's learned association between
+features and disruption risk does not fundamentally change as the training
+sample grows.  This allows predictions from models trained in different
+periods to be compared on a like-for-like basis.  It does not imply that
+predictions are accurate; it implies that whatever inaccuracy exists is
+stable and predictable in character.
 
 \subsection{Feature Importance}
 
-Figure~\ref{fig:importance} reports permutation importance estimates.
-The top five contributors by mean AUC loss are:
+Figure~\ref{fig:importance} reports permutation importance.  The top
+contributors by mean AUC loss are:
 \begin{enumerate}
-  \item \emph{Customer size} (C\_Size): AUC loss of 0.023, the dominant
-    predictor by a wide margin.
-  \item \emph{Quarter seasonality} (quarter\_sin): AUC loss of 0.012.
-  \item \emph{Customer age} (C\_Firmage): AUC loss of 0.009.
-  \item \emph{Quarter seasonality} (quarter\_cos): AUC loss of 0.005.
-  \item \emph{Relationship duration} (C\_Duration): AUC loss of 0.004.
+  \item Customer size (C\_Size): AUC loss 0.023---the dominant predictor
+    by a wide margin.
+  \item Quarter sine (quarter\_sin): AUC loss 0.012.
+  \item Customer age (C\_Firmage): AUC loss 0.009.
+  \item Quarter cosine (quarter\_cos): AUC loss 0.005.
+  \item Relationship duration (C\_Duration): AUC loss 0.004.
 \end{enumerate}
 
-Climate-finance exposure (Affected) ranks sixth with an AUC loss of 0.004,
-contributing at the same magnitude as relationship duration.  Supplier
-financing constraints (S\_FC) rank eighth (AUC loss 0.001), while the
-interaction term (Affected\_x\_S\_FC) and the city-level climate shock
-(Climate\_CityC) produce near-zero or mildly negative contributions in
-permutation testing.
+Upstream climate exposure (Affected) ranks sixth with AUC loss 0.004,
+at the same magnitude as relationship duration.  Supplier financing
+constraints (S\_FC) rank eighth (AUC loss 0.001), while the interaction
+term and the city-level extreme-precipitation variable (Climate\_CityC)
+produce near-zero or mildly negative contributions.
 
-Several features show negative mean AUC losses---board size, fixed-asset
-intensity, inventory, and calendar year---indicating that permuting these
-variables coincidentally does not harm, and in some cases marginally improves,
-holdout AUC.  This likely reflects that these variables add limited marginal
-information conditional on the dominant predictors, and their permutation
-reduces noise.
+Several features---board size, fixed-asset intensity, inventory, calendar
+year---show negative mean AUC losses, indicating that their permutation
+coincidentally does not reduce discrimination given the dominant
+predictors.
 
 \paragraph{Interpretation.}
-The dominance of customer size and customer age is consistent with the
-literature showing that larger, older firms have more stable supplier
-networks: they can absorb transitory disruptions through buffer inventories,
-offer better payment terms, or substitute suppliers more easily
-\citep{hendricks2005empirical}.  Seasonal patterns (captured by quarter sine
-and cosine) reflect the business-cycle structure of Chinese manufacturing,
-where supply-chain adjustments cluster around fiscal year-end and Spring
-Festival.  Relationship duration contributing positively indicates that
-established relationships are more resilient to disruption, consistent with
-relational contracting theory.
-
-The relatively modest contribution of climate variables does not imply that
-climate exposure is economically unimportant.  It implies, rather, that in
-the cross-section of a given year, firm size and age are more powerful
-discriminators of disruption risk than climate exposure.  The climate
-variables' contribution is captured jointly in the risk-surface analysis
-below.
+Customer size and age dominate, consistent with the finding that larger,
+older firms maintain more stable supplier networks and can absorb
+transitory shocks \citep{hendricks2005empirical}.  Seasonal patterns
+reflect the business-cycle structure of Chinese manufacturing, where
+supply-chain adjustments concentrate around fiscal year-end and major
+holidays.  Relationship duration contributing positively is consistent
+with the notion that established relationships are more resilient to
+disruption.  The modest rank of upstream climate exposure (sixth) indicates
+that cross-sectional size and age differences are stronger discriminators
+of disruption risk than climate readings in any given year---not that
+climate exposure is economically unimportant.
 
 \subsection{Risk Surfaces}
 
-Figure~\ref{fig:surface} presents model-implied risk surfaces.  Panel A
-sweeps climate-finance exposure (Affected) from 0 to 1 for three levels of
-supplier financing constraints.  Panel B sweeps customer-city climate shock
-intensity across its empirical support.
+Figure~\ref{fig:surface} shows model-implied risk surfaces.  These
+curves summarize model-implied associations in the holdout data; they are
+not causal estimates.
 
-\paragraph{Panel A: Exposure--constraint nonlinearity.}
-At low financing constraints (S\_FC~$= 0$, upper curve), predicted
-disruption risk declines monotonically from 0.555 to 0.491 as climate-finance
-exposure increases.  This negative gradient is initially counterintuitive but
-has a natural interpretation: firms with high climate-finance exposure may
-have already undergone supply-chain screening, retaining only robust
-relationships and hedging against climate-sensitive suppliers.  Alternatively,
-high-exposure firms may be in industries with stronger alternative supply
-sources, lowering the marginal risk of any given relationship.
+\paragraph{Panel A: Upstream exposure and financing constraints.}
+At low financing constraints (S\_FC~$= 0$), predicted disruption risk
+declines monotonically from 0.555 to 0.491 as upstream climate exposure
+increases from 0 to 1.  The negative gradient may reflect that firms
+with high upstream exposure had already restructured vulnerable
+relationships before the holdout period, or that they operate in
+industries with more substitutable suppliers.
 
-At high financing constraints (S\_FC~$= 1.0$, lower curve), the relationship
-is non-monotone and U-shaped.  Predicted risk is highest at zero exposure
-(0.458), declines to a minimum around Affected $= 0.525$ (0.423), then
-gradually rises.  This pattern suggests that constrained suppliers paired with
-moderately exposed customers face a \emph{reduced} termination risk---possibly
-because moderate exposure places both parties in the same situation, creating
-mutual dependence---while extreme values of either low or high exposure are
-associated with elevated risk.  The MLP captures this curvature, which a
-logistic regression would fit only with explicit interaction and quadratic
-terms.
+At high financing constraints (S\_FC~$= 1.0$), the pattern is U-shaped:
+risk is highest at zero upstream exposure (0.458), falls to a minimum near
+Affected~$= 0.525$ (0.423), and rises gradually at higher exposure levels.
+This non-monotone pattern is not represented in the simple logistic
+benchmark without explicit quadratic or interaction terms.  A possible
+interpretation is that moderately exposed, highly constrained firms occupy
+a middle position where neither extreme vulnerability channel dominates,
+though other explanations cannot be ruled out.  We report this as a
+model-implied descriptive pattern, not a mechanism.
 
-At intermediate constraints (S\_FC~$= 0.5$), the curve is approximately flat
-and slightly declining from 0.497 to 0.461, consistent with a dampening of
-both effects.
+At intermediate constraints (S\_FC~$= 0.5$), the curve is approximately
+flat, declining slightly from 0.497 to 0.461.
 
-\paragraph{Panel B: City-level climate shocks.}
-The climate-city curve shows a mild negative slope: predicted disruption risk
-declines very gradually from 0.544 at zero shock intensity to approximately
-0.531 at the upper end of the observed distribution.  The tick marks on the
-x-axis confirm that most observations cluster at low-to-moderate shock
-intensity.  The shallow and negative slope is consistent with the near-zero
-permutation importance of Climate\_CityC: aggregate city-level weather shocks
-are a poor discriminator of individual firm disruption risk, likely because
-they affect all firms in a region simultaneously and thus provide little
-cross-sectional variation for the classifier.
+\paragraph{Panel B: Customer-city extreme precipitation.}
+Predicted risk declines gradually from 0.544 at zero precipitation
+intensity to 0.531 at the upper end of the observed distribution.  The
+shallow slope is consistent with the near-zero permutation importance of
+Climate\_CityC: city-level aggregate shocks affect all local firms
+simultaneously and therefore provide little cross-sectional discrimination.
 
 %%==========================================================================
 \section{Discussion}\label{sec:discussion}
 %%==========================================================================
 
-\subsection{Stability Without Strong Accuracy}
+\subsection{Why Limited Accuracy Is Informative}
 
-Our central empirical finding---structural stability despite modest predictive
-accuracy---has two implications.  First, it corroborates the stability
-framework of \citet{stability2024framework}: the Frobenius-distance test
-provides information about the model's convergence properties independently
-of its discriminative power.  This means stability can be certified even
-when the prediction task is inherently difficult.  Second, it suggests that
-the relevant limitation in this application is \emph{data informativeness}
-rather than \emph{model reliability}: the existing feature set does not
-fully capture the mechanisms that determine supply-chain disruption outcomes
-under climate stress.
+The main finding---AUC consistently near 0.54 across both models and all
+rolling windows---tells us something about the data-generating process.
+It implies that the observable firm characteristics, governance indicators,
+and climate variables in our feature set capture only part of the variation
+in supply-chain disruption outcomes.  The unmodeled residual reflects
+relationship-specific factors: informal trust and contractual lock-in that
+are not disclosed, idiosyncratic production shocks, and managerial
+responses that unfold after the observation date.  Richer data---bilateral
+transaction volumes, credit terms, network centrality measures---would
+likely improve the signal.
 
-The limited AUC in this application is informative in its own right.  It tells
-us that the cross-sectional variation in disruption risk---conditional on
-observable firm and climate characteristics---is modest.  Much of the
-variation is driven by unobservable relationship-specific factors: contractual
-lock-in, informal trust, geographic proximity, and idiosyncratic managerial
-responses.  This finding should inform future data collection: richer
-relationship-level data (e.g., transaction volumes, bilateral credit terms,
-supply-chain network topology) would likely yield more discriminative features.
+The stability result adds a complementary piece of information.  It shows
+that what the model \emph{does} capture from these features is stable over
+time: the architecture does not drift as training data grow.  The
+combination of limited accuracy and structural stability is the expected
+pattern when the feature set is informative but incomplete.  A feature set
+that was truly uninformative would produce both low accuracy and unstable
+parameters; a feature set that fully described the outcome would produce
+both high accuracy and stability.  Our finding places this application
+somewhere in between.
 
-\subsection{The Role of Climate Variables}
+\subsection{The Role of Upstream Climate Exposure}
 
-The permutation importance results suggest a secondary but non-trivial
-role for climate variables.  Climate-finance exposure ranks sixth and
-achieves an AUC loss of 0.004.  This contribution is not negligible given
-that the total AUC above 0.5 is only about 0.036.  A more precise statement
-is that climate exposure contributes approximately 11\% of the total
-discriminative signal ($0.004 / 0.036 \approx 0.11$).
+Permutation importance ranks upstream climate exposure (Affected) sixth,
+with an AUC loss of 0.004.  Given that the total AUC above 0.5 is about
+0.036, this represents roughly 11\% of the discriminative signal
+($0.004 / 0.036$).  The contribution is small in absolute terms but not
+negligible relative to the available signal.
 
-The risk-surface nonlinearity documented in Figure~\ref{fig:surface} provides
-a richer picture than permutation importance alone.  The interaction of climate
-exposure with supplier financing constraints generates qualitatively different
-risk profiles that permutation-based analysis, by design, does not capture.
-This interaction is economically important: climate risk is not uniformly
-mapped to disruption probability but is conditioned by the financial
-resilience of the supply chain.  Ignoring this heterogeneity would lead to
-systematically wrong risk assessments for firms at the extremes of the
-exposure distribution.
+The risk-surface analysis provides additional information about the
+\emph{shape} of the climate association.  The non-monotone pattern at high
+financing constraints (Panel A) suggests that the climate exposure--disruption
+relationship is conditioned by financing conditions in a way that
+permutation importance---which evaluates marginal contributions averaged
+over the holdout---does not capture.  These patterns warrant further
+investigation, but because the prediction task is underpowered and the
+surface reflects model-implied associations rather than causal effects,
+strong economic conclusions about the mechanism should be deferred to
+studies with better identification.
 
-\subsection{Policy and Managerial Implications}
+\subsection{Implications for Model Deployment}
 
-For regulators, our findings suggest that a neural-network risk signal based
-on current observable characteristics alone would provide only marginal
-predictive improvement over simpler models.  Deploying such a model in a
-macro-prudential stress-testing context requires documenting stability---which
-our results confirm---alongside honest reporting of accuracy limitations.
+Our results suggest a practical evaluation protocol for deploying neural
+networks in climate risk assessment.  First, report accuracy metrics
+honestly across multiple evaluation windows, not only the best window.
+Second, test structural stability before interpreting accuracy as evidence
+about future performance.  Third, use permutation importance to check
+whether the dominant predictors are economically interpretable.  Fourth,
+use risk surfaces to look for model-implied heterogeneity that might
+otherwise be obscured by aggregate metrics.
 
-For financial institutions extending trade credit to exposed firms, the risk
-surface analysis offers actionable information: the combination of high
-supplier financing constraints and extreme (either very low or very high)
-climate exposure is the configuration most associated with elevated disruption
-risk.  This supports targeted credit review of suppliers in that configuration
-rather than blanket exposure adjustments.
+In our application, passing all four checks yields a consistent message:
+the model is stable and directionally sensible, but accuracy is limited,
+and deploying it for operational risk scoring requires acknowledging this
+limitation.
 
-\subsection{Limitations and Future Extensions}
+\subsection{Limitations}
 
-Several limitations qualify our results.  First, the sample covers a single
-country and institutional context; the stability and importance findings may
-not generalize to other markets with different disclosure requirements or
-financial structures.  Second, the feature set is restricted to publicly
-observable accounting and climate variables; transaction-level data on supply
-volumes, trade credit terms, and bilateral payment histories would enrich the
-prediction architecture.  Third, the MLP architecture is deliberately simple
-(two layers, 12--6 nodes); a systematic search over architectures---including
-graph neural networks that encode supply-chain network structure---might
-improve both accuracy and interpretability.
-
-Future work could extend the stability framework to alternative architectures
-(recurrent networks, transformer-based models) and to longer forecast horizons.
-Incorporating satellite-based climate data, text sentiment from earnings
-calls, or supply-chain network centrality measures as additional features
-could improve the signal-to-noise ratio.
+Several limitations apply.  The sample covers one country and one
+institutional context; the stability and importance findings may not extend
+to markets with different disclosure rules or financial structures.  The
+feature set is restricted to publicly observable accounting and climate
+variables; bilateral transaction data would be needed to improve accuracy
+substantially.  The MLP architecture is deliberately simple; a systematic
+architecture search or alternative classifiers might reveal further
+structure, though our findings suggest the binding constraint is feature
+informativeness rather than model capacity.  Finally, the stability test we
+apply compares cross-period distances to a same-data random-seed null; more
+demanding tests could compare against out-of-distribution samples or
+adversarial perturbations.
 
 %%==========================================================================
 \section{Conclusion}\label{sec:conclusion}
 %%==========================================================================
 
-This paper proposes and validates a stability-first evaluation framework for
-neural network prediction of climate-induced supply chain disruption risk.
-Using a panel of 4,188 customer-quarter observations from Chinese A-share
-listed firms, we document that a two-hidden-layer MLP classifier achieves
-out-of-sample AUC of 0.536 in the 2022--2023 holdout period---broadly
-comparable to a logistic regression benchmark (AUC~$=$~0.544)---reflecting
-strong heterogeneity and unobservable relationship dynamics that static
-financial and climate variables cannot fully capture.
+We test whether a neural network can reliably predict climate-induced
+supply-chain disruption risk using Chinese A-share data.  The answer has two
+parts.  First, a two-layer MLP trained on pre-2022 data achieves holdout
+AUC of 0.536 on the 2022--2023 test period, roughly matching a logistic
+regression benchmark (AUC~$=$~0.544), with rolling one-year-ahead AUCs
+ranging from 0.516 to 0.578 across five windows.  Neither model provides
+strong discrimination.  Second, normalized-parameter-distance diagnostics
+show that successive MLP parameter vectors remain consistently below the
+95th-percentile null threshold (maximum distance 0.490, threshold 1.534),
+confirming structural stability independently of accuracy.
 
-Despite the modest predictive accuracy, model-stability diagnostics confirm
-that the MLP converges to a structurally stable representation across all five
-rolling evaluation windows.  Normalized parameter distances (0.337--0.490)
-remain well below the 95th-percentile null threshold of 1.534 generated from
-same-sample random-seed perturbations, establishing that the variation in
-learned parameters attributable to new data is substantially smaller than
-optimization noise.  This structural stability is a meaningful property
-independently of accuracy: it implies that the model's risk signals are
-interpretable and consistent over time.
+The limited predictive gain is itself informative: it indicates that
+bilateral supply-chain disruption decisions contain a large
+relationship-specific component not captured by static financial and
+climate observables.  The stability result separates this data-informativeness
+limitation from a model-reliability question.  The architecture is reliable
+in the sense that what it learns is consistent over time; it is limited in
+the sense that the features it learns from do not fully describe the outcome.
 
-Feature importance analysis identifies customer size, seasonal timing, and
-customer age as the dominant predictors, with climate-finance exposure
-contributing positively but at a secondary level.  Risk-surface analysis
-reveals a nonlinear interaction between climate exposure and supplier
-financing constraints---captured by the MLP but not by a linear model---
-that has direct implications for targeted risk assessment.
+Permutation importance identifies customer size, seasonal timing, and
+customer age as the dominant predictors.  Upstream climate exposure
+contributes positively but at a secondary level, consistent with the
+conclusion that firm fundamentals are stronger cross-sectional discriminators
+of disruption risk than climate readings.  Risk-surface analysis shows
+model-implied associations between upstream climate exposure and supplier
+financing constraints---including a non-monotone pattern at high constraint
+levels---that the simple logistic benchmark does not represent, though these
+should be read as descriptive patterns rather than causal mechanisms.
 
-The broader message for computational economics is methodological: in
-high-heterogeneity prediction environments, structural stability and limited
-accuracy can coexist, and documenting stability provides genuine information
-about the model's suitability for operational deployment.  Future work should
-enrich the feature set with network-topology and transaction-level data,
-which appear necessary to improve the signal-to-noise ratio in this
-challenging prediction domain.
+The broader takeaway for computational economics is methodological.  In
+prediction tasks with strong unobservable components, documenting structural
+model stability and reporting accuracy honestly across multiple evaluation
+windows are both necessary steps before claiming any practical utility.
+Future work should enrich the feature set with network-topology and
+bilateral transaction data, and extend the stability framework to
+alternative architectures and forecast horizons.
 
 %%==========================================================================
 %% REFERENCES
@@ -832,12 +732,12 @@ challenging prediction domain.
 \toprule
 Feature & Label & Category \\
 \midrule
-Affected & Climate-finance exposure & Climate/Exposure \\
-Climate\_CityC & Customer-city climate shock & Climate/Exposure \\
-Affected\_x\_S\_FC & Exposure $\times$ supplier constraint & Climate/Exposure \\
+Affected & Upstream climate exposure (financing + precipitation) & Climate/Exposure \\
+Climate\_CityC & Customer-city extreme precipitation intensity & Climate/Exposure \\
+Affected\_x\_S\_FC & Upstream exposure $\times$ supplier constraint & Climate/Exposure \\
 S\_FC & Supplier financing constraint & Supply Chain \\
-C\_Duration & Relationship duration & Supply Chain \\
-C\_Size & Customer size (log assets) & Financial \\
+C\_Duration & Relationship duration (quarters) & Supply Chain \\
+C\_Size & Customer size (log total assets) & Financial \\
 C\_Lev & Customer leverage & Financial \\
 C\_Inv & Customer inventory intensity & Financial \\
 C\_Ppe & Customer fixed-asset intensity & Financial \\
@@ -845,18 +745,22 @@ C\_Firmage & Customer age since listing & Financial \\
 C\_Board & Board size & Governance \\
 C\_Indep & Proportion of independent directors & Governance \\
 C\_Occupy & Shareholder tunneling indicator & Governance \\
-C\_Frequency & Stock trading frequency & Governance \\
+C\_Frequency & Customer-supplier transaction frequency & Governance \\
 year\_c & Calendar year (demeaned) & Temporal \\
-quarter\_sin & Quarter seasonality (sine) & Temporal \\
-quarter\_cos & Quarter seasonality (cosine) & Temporal \\
+quarter\_sin & Quarter seasonality (sine encoding) & Temporal \\
+quarter\_cos & Quarter seasonality (cosine encoding) & Temporal \\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
   \small
-  \item \textit{Notes}: All features are computed from the Stata replication
-  dataset of \citet{original2024climate}. Climate-finance exposure and
-  Affected\_x\_S\_FC are constructed following the methodology described
-  in that paper. Temporal features encode the within-year quarter cycle.
+  \item \textit{Notes}: Affected equals one when the customer's upstream
+  focal firm simultaneously faces financing constraints and is exposed to
+  extreme precipitation, following the construction in
+  \citet{original2024climate}.  Climate\_CityC is the log intensity of
+  extreme precipitation in the customer's registered city.
+  C\_Frequency records the frequency of transactions between the
+  customer and its major suppliers.  Temporal features encode the
+  within-year quarter cycle via sine and cosine transformations.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -871,7 +775,7 @@ quarter\_cos & Quarter seasonality (cosine) & Temporal \\
 \toprule
 Model & Train $n$ & Test $n$ & AUC & Avg.\ Precision & Brier & Obs.\ Rate \\
 \midrule
-MLP Neural Network & 2,945 & 1,243 & 0.536 & 0.598 & 0.252 & 0.560 \\
+MLP Neural Network  & 2,945 & 1,243 & 0.536 & 0.598 & 0.252 & 0.560 \\
 Logistic Regression & 2,945 & 1,243 & 0.544 & 0.591 & 0.250 & 0.560 \\
 \bottomrule
 \end{tabular}
@@ -879,11 +783,11 @@ Logistic Regression & 2,945 & 1,243 & 0.544 & 0.591 & 0.250 & 0.560 \\
   \small
   \item \textit{Notes}: Training cutoff is year 2021; holdout covers
   2022--2023.  AUC is area under the ROC curve.  Avg.\ Precision is area
-  under the precision-recall curve.  Brier score is the mean squared
-  probability error.  Obs.\ Rate is the observed disruption rate in the
-  holdout sample ($\textit{BreakRisk4Q} = 1$).  Both models use the same
-  17 features with StandardScaler normalization.  Logistic regression is
-  included as a transparent linear benchmark only.
+  under the precision-recall curve.  Brier score is mean squared probability
+  error.  Obs.\ Rate is the share of holdout observations with
+  $\textit{BreakRisk4Q}=1$.  Both models use the same 17 features with
+  StandardScaler normalization.  Logistic regression is a transparent linear
+  reference only.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -909,12 +813,10 @@ Train cutoff & Eval year & Train $n$ & Test $n$ & AUC & Brier \\
 \end{tabular}
 \begin{tablenotes}
   \small
-  \item \textit{Notes}: Each row trains an MLP on all observations up to the
-  training cutoff and evaluates on the following year only.  Random seed is
-  fixed to 42 across all windows.  Rows with fewer than 50 test observations
-  or fewer than two outcome classes in train or test are excluded (none are
-  excluded here).  The observed disruption rate in evaluation years ranges
-  from 0.468 (2019) to 0.580 (2022).
+  \item \textit{Notes}: Each row trains an MLP on all observations through
+  the training cutoff and evaluates on the following year only.  Random
+  seed fixed at 42.  The observed positive-label rate in evaluation years
+  ranges from 0.468 (2019) to 0.580 (2022).
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -938,14 +840,12 @@ Train cutoff & Eval year & Train $n$ & $d_t$ & Null $q_{0.95}$ & AUC \\
 \end{tabular}
 \begin{tablenotes}
   \small
-  \item \textit{Notes}: $d_t$ is the normalized Frobenius distance between
-  the MLP parameter vector trained through year $t$ and the reference model
-  trained through 2018 (equation~\eqref{eq:distance}).  The null threshold
-  $q_{0.95}$ is the 95th percentile of 20 same-sample distances generated by
-  training the reference-year model with different random seeds (43--62).
-  All $d_t < q_{0.95}$ confirms structural stability.
-  The 2018 row reports the reference model itself ($d_{2018} = 0$ by
-  construction).
+  \item \textit{Notes}: $d_t$ is the normalized Frobenius distance
+  from the 2018 reference model (equation~\eqref{eq:distance}).  The
+  null threshold $q_{0.95}$ is the 95th percentile of 20 same-data
+  distances generated by re-training the 2018 model with different
+  random seeds.  All $d_t < q_{0.95}$ establishes structural stability.
+  The 2018 row is the reference model ($d_{2018}=0$ by construction).
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -958,15 +858,17 @@ Train cutoff & Eval year & Train $n$ & $d_t$ & Null $q_{0.95}$ & AUC \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.98\linewidth]{../nn_supply_chain_figures/figures/fig1_sample_facts.pdf}
+\includegraphics[width=0.98\linewidth]{fig1_sample_facts.pdf}
 \caption{Prediction sample and climate exposure.
 \textit{Notes}: Panel A reports the annual share of customer-quarter
-observations with a positive four-quarter forward disruption risk
-($\textit{BreakRisk4Q}=1$).  Panel B reports the sample mean of the
-customer-city extreme-weather variable (Climate\_CityC) and the
-climate-finance exposure variable (Affected).  Light bars flag sparse
-early-year cells with fewer than 50 observations.  Total sample:
-4,188 customer-quarter observations, 2011--2023.}
+observations with a positive four-quarter forward net termination
+($\textit{BreakRisk4Q}=1$).  Panel B reports sample means of the
+customer-city extreme-precipitation variable (Climate\_CityC) and the
+upstream climate exposure variable (Affected), which equals one when
+the focal upstream firm simultaneously faces financing constraints and
+extreme precipitation.  Light bars flag years with fewer than 50
+observations.  Total sample: 4,188 customer-quarter observations,
+2011--2023.}
 \label{fig:sample}
 \end{figure}
 
@@ -974,14 +876,14 @@ early-year cells with fewer than 50 observations.  Total sample:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.98\linewidth]{../nn_supply_chain_figures/figures/fig2_prediction_curves.pdf}
+\includegraphics[width=0.98\linewidth]{fig2_prediction_curves.pdf}
 \caption{Out-of-sample predictive performance, 2022--2023 holdout.
-\textit{Notes}: Panel A plots ROC curves for the MLP neural network
-(solid, AUC~$=$~0.536) and logistic regression benchmark (dashed,
+\textit{Notes}: Panel A plots ROC curves for the MLP (solid,
+AUC~$=$~0.536) and logistic regression benchmark (dashed,
 AUC~$=$~0.544).  Panel B plots precision-recall curves; the horizontal
-reference line is the observed disruption rate (0.560).  The logit
-benchmark is included as a transparent linear reference only and is not
-an alternative to be optimized.}
+line is the observed positive-label rate (0.560).  Both models use the
+same 17 features and the same training sample.  The logit is included
+as a transparent linear reference.}
 \label{fig:prediction}
 \end{figure}
 
@@ -989,16 +891,16 @@ an alternative to be optimized.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.98\linewidth]{../nn_supply_chain_figures/figures/fig3_calibration_residuals.pdf}
+\includegraphics[width=0.98\linewidth]{fig3_calibration_residuals.pdf}
 \caption{Calibration and residual diagnostics.
-\textit{Notes}: Panel A bins neural-network predictions from the rolling
-one-year-ahead protocol into deciles and plots the mean predicted
-probability against the observed disruption rate in each bin.  A perfect
-calibration curve follows the 45-degree line.  Panel B plots the
-autocorrelation function (ACF) of quarterly mean residuals; the shaded
-band is the $\pm 1.96/\sqrt{T}$ approximate 95\% confidence interval.
-Notable is the positive ACF at lag 7 (0.31), suggesting unmodelled
-semi-annual or annual structure in the disruption process.}
+\textit{Notes}: Panel A bins rolling one-year-ahead MLP predictions
+into deciles and plots mean predicted probability against the observed
+positive-label rate per bin.  A perfectly calibrated model would
+follow the 45-degree line.  Panel B plots the ACF of quarterly mean
+residuals; the shaded band is the $\pm 1.96/\sqrt{T}$ 95\% confidence
+interval.  The positive ACF at lag 7 (0.31) suggests an annual
+structure in disruption risk not captured by the quarter-cycle
+encoding.}
 \label{fig:calibration}
 \end{figure}
 
@@ -1006,16 +908,18 @@ semi-annual or annual structure in the disruption process.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.98\linewidth]{../nn_supply_chain_figures/figures/fig4_model_stability.pdf}
+\includegraphics[width=0.98\linewidth]{fig4_model_stability.pdf}
 \caption{Model stability diagnostics.
 \textit{Notes}: Panel A plots normalized Frobenius parameter distances
-$d_t$ (equation~\eqref{eq:distance}) between the model trained through
-year $t$ and the 2018 reference model (solid circles connected by line).
-The dashed horizontal line is the 95th percentile of the same-sample null
-distribution ($q_{0.95}^{\text{null}} = 1.534$) generated from 20
-random-seed perturbations of the 2018 reference model.  All $d_t$ lie
-well below the threshold, confirming structural stability.  Panel B
-reports the corresponding rolling one-year-ahead AUC.}
+$d_t$ (equation~\eqref{eq:distance}) from the 2018 reference model
+(solid circles).  The dashed horizontal line is the 95th-percentile
+null threshold ($q_{0.95}^{\text{null}} = 1.534$) from 20
+random-seed perturbations of the 2018 reference model.  All $d_t$
+lie well below the threshold.  Panel B reports the corresponding
+rolling one-year-ahead AUC.  Stable parameters in Panel A do not
+translate into improving accuracy in Panel B, confirming that accuracy
+is constrained by feature informativeness rather than model
+architecture.}
 \label{fig:stability}
 \end{figure}
 
@@ -1023,15 +927,15 @@ reports the corresponding rolling one-year-ahead AUC.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.86\linewidth]{../nn_supply_chain_figures/figures/fig5_permutation_importance.pdf}
+\includegraphics[width=0.86\linewidth]{fig5_permutation_importance.pdf}
 \caption{Permutation feature importance, 2022--2023 holdout.
-\textit{Notes}: Each bar is the mean decrease in holdout AUC when the
-feature is permuted 50 times, holding all other features fixed.  Error
-bars report 95\% simulation intervals across permutations.  Customer size
-(C\_Size, mean AUC loss 0.023) dominates; climate-finance exposure
-(Affected, 0.004) and supplier financing constraints (S\_FC, 0.001)
-contribute positively but modestly.  Features with negative mean AUC loss
-add no discriminative information under permutation in this sample.}
+\textit{Notes}: Each bar reports the mean decrease in holdout AUC when
+the feature is permuted 50 times.  Error bars are 95\% simulation
+intervals.  Customer size (C\_Size, mean AUC loss 0.023) is the
+dominant predictor.  Upstream climate exposure (Affected, AUC loss
+0.004) and supplier financing constraints (S\_FC, 0.001) contribute
+positively but modestly.  Features with negative bars add no useful
+discriminative information conditional on the remaining features.}
 \label{fig:importance}
 \end{figure}
 
@@ -1039,17 +943,17 @@ add no discriminative information under permutation in this sample.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.98\linewidth]{../nn_supply_chain_figures/figures/fig6_risk_surface.pdf}
+\includegraphics[width=0.98\linewidth]{fig6_risk_surface.pdf}
 \caption{Model-implied supply chain risk surfaces.
-\textit{Notes}: Risk surfaces average predicted disruption probabilities
-over the 2022--2023 holdout covariate distribution.  Panel A varies
-climate-finance exposure (Affected, $x$-axis) for three levels of
+\textit{Notes}: Curves average predicted disruption probabilities over
+the 2022--2023 holdout covariate distribution.  Panel A varies
+upstream climate exposure (Affected, $x$-axis) at three levels of
 supplier financing constraints ($\textit{S\_FC} \in \{0, 0.5, 1.0\}$),
 updating the interaction term consistently.  Panel B varies
-customer-city climate shock intensity (Climate\_CityC); tick marks show
-deciles of the empirical support.  The curves reveal nonlinear
-interaction effects that linear models cannot capture without explicit
-polynomial or interaction terms.}
+customer-city extreme-precipitation intensity (Climate\_CityC); tick
+marks show deciles of the holdout empirical support.  These are
+model-implied associations in the holdout data and should not be
+interpreted as causal effects.}
 \label{fig:surface}
 \end{figure}
 

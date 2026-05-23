@@ -1,9 +1,12 @@
 """
 Appendix E – MLP architecture sensitivity.
 
-Trains five MLP architectures on the 2022-2023 primary holdout and computes:
+Trains five MLP architectures on the 2022-2023 primary holdout and reports:
+  - Parameter count
   - Holdout AUC, AP, Brier
-  - Normalized parameter distance from (12,6) reference model
+
+Cross-architecture parameter distances are not computed because networks with
+different hidden-layer widths have parameter vectors of incompatible dimensions.
 
 Requires the original Stata file.
 Output: computational_economics_manuscript/appendix_data/appendix_e_architecture.csv
@@ -19,8 +22,7 @@ from sklearn.preprocessing import StandardScaler
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "nn_supply_chain_figures" / "code"))
-from common import (load_reorganization_data, FEATURES,     # noqa: E402
-                    parameter_vector, normalized_distance)
+from common import load_reorganization_data, FEATURES  # noqa: E402
 
 OUT_DIR = REPO / "computational_economics_manuscript" / "appendix_data"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -60,10 +62,6 @@ def main():
     X_train, y_train = train[FEATURES], train["BreakRisk4Q"]
     X_test,  y_test  = test[FEATURES],  test["BreakRisk4Q"]
 
-    # fit baseline (12,6) as reference for distance calculations
-    baseline = make_mlp_arch((12, 6))
-    baseline.fit(X_train, y_train)
-
     rows = []
     for name, hidden in ARCHITECTURES.items():
         model = make_mlp_arch(hidden)
@@ -71,19 +69,20 @@ def main():
         pred  = model.predict_proba(X_test)[:, 1]
         n_params = sum(w.size for w in model.named_steps["model"].coefs_) + \
                    sum(b.size for b in model.named_steps["model"].intercepts_)
-        dist = normalized_distance(model, baseline, baseline)
+        auc   = roc_auc_score(y_test, pred)
+        ap    = average_precision_score(y_test, pred)
+        brier = brier_score_loss(y_test, pred)
         rows.append({
             "architecture": name,
             "n_params": n_params,
-            "auc":    roc_auc_score(y_test, pred),
-            "ap":     average_precision_score(y_test, pred),
-            "brier":  brier_score_loss(y_test, pred),
-            "param_dist_from_baseline": dist,
+            "auc":    auc,
+            "ap":     ap,
+            "brier":  brier,
         })
-        print(f"{name:10s}  params={n_params:4d}  AUC={rows[-1]['auc']:.3f}  "
-              f"dist={dist:.3f}")
+        print(f"{name:10s}  params={n_params:4d}  AUC={auc:.3f}  AP={ap:.3f}  Brier={brier:.3f}")
 
     pd.DataFrame(rows).to_csv(OUT_DIR / "appendix_e_architecture.csv", index=False)
+    print(f"\nSaved to {OUT_DIR / 'appendix_e_architecture.csv'}")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 
-%% ── Packages ──────────────────────────────────────────────────────────────
+%% Packages
 \usepackage[margin=1.25in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{bm}
@@ -25,21 +25,22 @@
 \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
 \doublespacing
 
-%% ── Title block ───────────────────────────────────────────────────────────
+%% Title block
 \title{\textbf{Neural Network Stability and Climate-Induced Supply Chain
 Disruption Risk:\\[4pt]
 Evidence from Chinese Listed Firms}%
 \thanks{We thank the original data creators whose replication materials
 underpin the empirical analysis.  All figures and statistics are computed from
 the Stata replication file using Python; no simulated outcome data are used.
-Correspondence: [author email].}}
-\author{[Authors]}
+Correspondence: \href{mailto:18522704823@163.com}{18522704823@163.com}.}}
+\author{Wang Weijia (王维佳)\thanks{School of Economics and Finance,
+Xi'an Jiaotong University.}}
 \date{\today}
 
 \begin{document}
 \maketitle
 
-%% ── Abstract ──────────────────────────────────────────────────────────────
+%% Abstract
 \begin{abstract}
 \noindent
 Can a neural network reliably predict which supply-chain relationships
@@ -52,17 +53,17 @@ A two-hidden-layer multilayer perceptron (MLP) trained on pre-2022 data
 achieves holdout AUC of 0.536 on the 2022--2023 test period; a logistic
 regression benchmark scores 0.544.  Rolling one-year-ahead AUCs range from
 0.516 to 0.578 across five evaluation windows, indicating that limited
-predictability is a structural feature of this task rather than an artifact
-of the test window.  Applying a normalized-parameter-distance stability
-framework, we show that successive MLP parameter vectors remain consistently
-below the 95th-percentile null threshold derived from same-sample random-seed
-perturbations (maximum observed distance 0.49, threshold 1.53), confirming
-structural stability independently of predictive accuracy.  These results
-suggest that while static financial and climate observables provide only a
-weak discriminative signal for supply-chain disruption, neural network models
-trained on such data can be structurally stable---and documenting this
-stability is a necessary step before reporting the limits of machine learning
-in high-heterogeneity prediction tasks.
+long-horizon predictability is a structural limitation of this task rather
+than an artifact of the test window.  Shorter horizons are more predictable:
+the MLP AUC is 0.668 for one-quarter disruption and 0.656 for two-quarter
+disruption.  Applying a normalized-parameter-distance stability framework, we
+show that successive MLP parameter vectors remain below the 95th-percentile
+null threshold from same-sample random-seed perturbations (maximum observed
+distance 0.49, threshold 1.53).  These results show that neural networks can
+be structurally stable even when long-horizon discrimination is weak, and that
+supply-chain climate-risk prediction is most useful at short horizons where
+observed financial and climate features retain predictive content before
+managerial adaptation and supplier substitution erode the signal.
 
 \medskip\noindent
 \textbf{Keywords:} climate risk; supply chain disruption; neural networks;
@@ -83,12 +84,14 @@ a climate shock?  In our Chinese listed-firm sample the answer is only
 partly yes.  A two-layer MLP is structurally stable across rolling samples,
 but its 2022--2023 holdout AUC is 0.536---slightly \emph{below} a logistic
 regression benchmark (AUC~$=$~0.544)---and rolling one-year-ahead AUCs
-fluctuate between 0.516 and 0.578, never exceeding 0.60.  We argue that
-this limited predictive gain is itself informative: it reflects strong
-unobservable components in supply-chain disruption decisions, and it
-motivates a stability-based evaluation approach that separates the question
-of \emph{how reliable is the model architecture} from the question of
-\emph{how much signal the features contain}.
+fluctuate between 0.516 and 0.578, never exceeding 0.60.  Yet the same
+architecture predicts shorter-horizon disruptions more effectively: AUC is
+0.668 for one-quarter disruption and 0.656 for two-quarter disruption.  We
+argue that this horizon gradient is informative.  It suggests that observable
+financial, governance, and climate variables contain short-run warning signal,
+while longer-run relationship reorganization depends more on unmeasured
+contractual terms, supplier substitution, and managerial responses that are
+not recorded in mandatory disclosures.
 
 The data come from mandatory disclosures of Chinese A-share listed firms,
 which record bilateral customer-supplier relationships at a quarterly
@@ -101,15 +104,18 @@ training-test split is strictly temporal: no future data enter the training
 set at any evaluation point.
 
 The main predictive finding is that neither model provides strong
-discrimination.  The MLP AUC of 0.536 and average precision of 0.598 are
-broadly matched by logistic regression (AUC~$=$~0.544, AP~$=$~0.591).
-Permutation importance shows that customer size, seasonal timing, and
-customer age dominate the signal, while the upstream climate exposure
-variable and the city-level extreme-precipitation measure contribute
-positively but at a secondary level.  These results indicate that supply
-chain disruption under climate stress is largely mediated through firm
-fundamentals and relationship characteristics that cross-sectional static
-observables only partially capture.
+discrimination for the four-quarter target.  The MLP AUC of 0.536 and average
+precision of 0.598 are broadly matched by logistic regression
+(AUC~$=$~0.544, AP~$=$~0.591).  Extended model comparison shows that ridge
+logit, random forest, and histogram gradient boosting also remain near this
+range.  The important positive result is horizon dependence: MLP AUC falls
+from 0.668 at one quarter to 0.536 at four quarters.  The AUC decline
+reflects a progressive loss of feature informativeness as the forecast horizon
+extends and firms adapt to initial shocks---not instability in the neural
+network's learned parameters.  Permutation importance shows that customer
+size, seasonal timing, and customer age dominate the four-quarter signal,
+while upstream climate exposure and customer-city extreme precipitation
+contribute positively but at a secondary level.
 
 The main stability finding is that all five rolling MLP parameter vectors
 lie well below the stability threshold.  Normalized Frobenius distances
@@ -120,7 +126,7 @@ largest observed distance.  This means that the parameter shift attributable
 to additional data is substantially smaller than the noise attributable to
 random initialization on the same data.  The MLP architecture therefore
 converges to a consistent set of parameters across sample expansions, even
-though accuracy remains modest.
+though accuracy remains modest at four quarters.
 
 This paper makes three contributions.  First, we apply the
 normalized-parameter-distance stability framework of
@@ -128,13 +134,14 @@ normalized-parameter-distance stability framework of
 showing how structural stability can be certified in a setting where
 predictive accuracy is inherently limited.  Second, we document that static
 financial and climate variables provide only weak discriminative power for
-bilateral relationship termination, quantifying the role of upstream climate
-exposure relative to conventional firm characteristics.  Third, we show
+four-quarter bilateral relationship termination but stronger signal for
+one- and two-quarter disruption, quantifying how predictability decays with
+the forecast horizon.  Third, we show
 through risk-surface analysis that the MLP reveals model-implied
 associations between upstream climate exposure and supplier financing
 constraints that the simple logistic benchmark does not represent without
-explicit nonlinear terms---associations that may be relevant for targeted
-credit review, though they should not be read as causal mechanisms.
+explicit nonlinear terms---associations that may help prioritize further
+diagnostic analysis, though they should not be read as causal mechanisms.
 
 The remainder of the paper is organized as follows.  Section~\ref{sec:lit}
 reviews related literature.  Section~\ref{sec:data} describes the data and
@@ -209,18 +216,21 @@ all of these, is that stability and accuracy are separate properties: a model
 can be structurally stable yet carry weak signal, or highly accurate yet
 fragile to sample variation.
 
-\subsection{Chinese Supply-Chain Networks and Financing Constraints}
+\subsection{Chinese Supply Chains and Financing Constraints}
 
 China's disclosure requirements for major customer and supplier
 relationships provide unusually granular data on bilateral supply-chain
-links \citep{original2024climate}.  \citet{love2003financial} documented
-that financing constraints amplify disruptions in developing-market supply
-chains, and the data here confirm that the interaction between upstream
-financing constraints and climate exposure shapes predicted disruption risk
-in ways that are not captured by a linear specification.  Governance
+links \citep{original2024climate}.  \citet{love2003financial} show that
+trade credit is especially important where formal financial intermediation
+is weaker.  This motivates including supplier financing constraints as a
+predictor, while the disruption interpretation comes from the climate
+supply-chain setting in \citet{original2024climate}.  In our data, the
+interaction between upstream financing constraints and climate exposure
+shapes model-implied disruption risk in ways that the simple logit
+benchmark does not represent without added nonlinear terms.  Governance
 characteristics---board independence, shareholder tunneling---appear in the
-permutation-importance ranking, consistent with the literature on
-Chinese trade credit that includes these controls.
+permutation-importance ranking, consistent with the literature on Chinese
+trade credit that includes these controls.
 
 %%==========================================================================
 \section{Data and Variable Construction}\label{sec:data}
@@ -270,15 +280,15 @@ environment.
 Table~\ref{tab:features} lists the 17 input features in four groups.
 
 \paragraph{Climate and Upstream Exposure.}
-\emph{Affected} indicates that the customer's upstream focal firm
-simultaneously faced financing constraints \emph{and} was exposed to
-extreme precipitation shocks during the observation period, following the
+\emph{Affected} measures the customer's exposure to upstream focal firms
+that simultaneously faced financing constraints \emph{and} extreme
+precipitation shocks during the observation period, following the
 construction in \citet{original2024climate}.  It is the key exposure
-variable: it captures the double-stress condition that the original paper
+measure: it captures the double-stress condition that the original paper
 identifies as the primary mechanism for forced supply-chain reorganization.
 \emph{Climate\_CityC} is the log intensity of extreme precipitation in the
 customer's registered city.  \emph{Affected\_x\_S\_FC} is the interaction
-of the upstream exposure indicator with the supplier financing constraint.
+of the upstream exposure measure with the supplier financing constraint.
 
 \paragraph{Supply-Chain Characteristics.}
 \emph{S\_FC} (supplier financing constraint) measures the degree to which
@@ -304,22 +314,22 @@ sine and cosine encodings of the quarter (\emph{quarter\_sin},
 
 Figure~\ref{fig:sample} documents the prediction environment.  Panel A
 shows the annual positive-label rate, which ranges from 0.42 to 0.58 with
-no clear trend, confirming that net positive terminations are a persistent
+no clear trend, indicating that net positive terminations are a persistent
 feature of the sample rather than a spike concentrated in one period.  The
-rate rises to 0.580 in 2022, consistent with post-pandemic supply-chain
-dislocations and heightened geopolitical uncertainty.
+rate rises to 0.580 in 2022; this is a descriptive pattern rather than
+evidence on the source of that year's supply-chain stress.
 
 Panel B plots the annual means of the two climate variables.  The upstream
 exposure variable (Affected) is highest in 2014--2016 (sample mean above
-0.23) and falls to 0.085 by 2023, reflecting the gradual tightening of
-Chinese green-finance policy that directed bank credit away from
-climate-sensitive industries.  The customer-city extreme-precipitation
-variable (Climate\_CityC) peaks around 2016 and also declines in 2023.
+0.23) and falls to 0.085 by 2023.  The customer-city
+extreme-precipitation variable (Climate\_CityC) peaks around 2016 and also
+declines in 2023.  These time patterns motivate the temporal split but are
+not, by themselves, evidence on policy or macroeconomic mechanisms.
 Light bars flag years with fewer than 50 observations, where sample means
 are less reliable.
 
 %%==========================================================================
-\section{Neural Network Methodology and Stability Framework}\label{sec:method}
+\section{Neural Network and Stability Framework}\label{sec:method}
 %%==========================================================================
 
 \subsection{Multilayer Perceptron Classifier}
@@ -328,7 +338,14 @@ We train a two-hidden-layer MLP with 12 neurons in the first hidden layer
 and 6 in the second, both with rectified linear unit (ReLU) activations
 \citep{lecun2015deep}.  The output layer uses a logistic sigmoid to
 produce a predicted disruption probability.  All inputs are standardized
-to zero mean and unit variance before entering the network.
+to zero mean and unit variance before entering the network.  The (12,6)
+specification is a deliberately low-capacity architecture: with 2,945
+training observations and 17 input features, the 301 trainable parameters
+yield a ratio of approximately ten observations per parameter.
+Appendix~\ref{app:architecture} confirms that wider and deeper networks
+(up to 3,265 parameters) do not materially improve four-quarter holdout AUC,
+consistent with the view that feature informativeness rather than model
+capacity is the binding constraint.
 
 Training uses Adam stochastic gradient descent with initial learning rate
 0.003 and L2 weight decay $\alpha = 0.01$.  We apply early stopping:
@@ -352,10 +369,10 @@ observations) and evaluated on 2022--2023 (1,243 observations), mirroring
 deployment conditions for a practitioner fitting the model at end-2021.
 
 \paragraph{Rolling one-year-ahead evaluation.}
-For each training cutoff $t \in \{2018, 2019, 2020, 2021, 2022\}$, we
-train on year $\leq t$ and evaluate on year $t+1$.  We require at least 50
-test observations and both outcome classes present in train and test; all
-five windows satisfy these criteria.
+For training cutoffs 2018, 2019, 2020, 2021, and 2022, we train on all
+observations through the cutoff year and evaluate on the following year.
+We require at least 50 test observations and both outcome classes present
+in train and test; all five windows satisfy these criteria.
 
 \subsection{Evaluation Metrics}
 
@@ -434,9 +451,10 @@ prediction environment.  The 4,188 observations are concentrated in
 2019--2023, consistent with the expanding A-share disclosure coverage.
 The positive-label rate is near-balanced in every evaluation window
 (0.42--0.58), so neither class dominates.  The two climate variables trend
-downward in the early 2020s, possibly reflecting green-finance reforms and
-shifting precipitation patterns; most observations carry moderate rather
-than extreme climate readings.
+downward in the early 2020s; whether this reflects policy, reporting,
+industrial adjustment, precipitation patterns, or sample composition cannot
+be separated in this prediction exercise.  Most observations carry moderate
+rather than extreme climate readings.
 
 \subsection{Out-of-Sample Predictive Performance}
 
@@ -453,7 +471,7 @@ Figure~\ref{fig:prediction} shows the ROC and precision-recall curves.
 Both curves lie modestly above the diagonal (Panel A), and both
 precision-recall curves barely exceed the no-skill line at the observed
 rate of 0.560 (Panel B).  The near-overlap of the MLP and logit curves in
-both panels confirms that the nonlinearity in the MLP does not translate
+both panels suggests that the nonlinearity in the MLP does not translate
 into a meaningful predictive gain in this application.
 
 \paragraph{Interpretation.}
@@ -466,13 +484,65 @@ Table~\ref{tab:bootstrap}) sharpen this picture: only the
 (AUC~$=$~0.578, CI~$[$0.542, 0.619$]$).  The remaining four windows return
 confidence intervals that include 0.5, so predictive discrimination above
 random chance cannot be established at the 5\% level in most evaluation
-periods.  This is the most cautious summary of the evidence: the model's
-rank-ordering advantage is statistically fragile, concentrated in a single
-evaluation year, and should not be taken as evidence of reliable early-warning
-capability without further data and richer features.  Supply-chain disruption
+periods.  The AUC decline from 0.668 at one quarter to 0.536 at four quarters
+indicates that observed features lose predictive content as the horizon
+extends and firms adapt to initial shocks.  Supply-chain disruption
 decisions reflect unobservable contractual terms, relationship-specific
 dynamics, and managerial responses that cross-sectional static observables
 only partially capture.
+
+Additional robustness checks refine this conclusion.  Appendix~\ref{app:model}
+shows that ridge logit, random forests, and histogram gradient boosting do not
+materially improve four-quarter holdout AUC; their AUCs range from 0.528 to
+0.544.  Appendix~\ref{app:ablation} shows that finance variables carry more of
+the available four-quarter signal than climate-only or governance-only
+features.  Appendix~\ref{app:horizons} shows that predictability is sharply
+horizon-dependent: the MLP AUC is 0.668 for a one-quarter target and 0.656 for
+a two-quarter target, falling to 0.536 for the four-quarter target used in the
+main analysis.  Appendix~\ref{app:architecture} shows that changing MLP width
+and depth does not remove the four-quarter performance ceiling.
+Table~\ref{tab:summary} consolidates these findings: across all alternative
+classifiers and architecture specifications, no configuration exceeds AUC 0.557
+for the four-quarter target, while the same MLP reaches 0.668 at one quarter.
+
+\subsection{Horizon-Dependent Predictability: Economic Interpretation}\label{subsec:horizon}
+
+The weak four-quarter result masks substantial horizon dependence.
+Table~\ref{tab:appendix_horizons} shows that the same MLP reaches AUC 0.668
+for one-quarter disruption and 0.656 for two-quarter disruption, before
+falling to 0.607 at three quarters and 0.536 at four quarters.  At the
+one-quarter horizon the MLP also outperforms the logistic benchmark
+(AUC~$=$~0.624), whereas at four quarters the benchmark is marginally ahead.
+The horizon gradient is the paper's strongest positive result.
+
+The decline in AUC from 0.668 to 0.536 is economically plausible.
+One-quarter disruptions are temporally close to the realized shock and
+therefore retain information from observable financial stress, supplier
+financing constraints, and local climate exposure.  The prediction problem
+at one quarter is largely about identifying which firms are currently fragile
+in ways that accounting and climate disclosures capture with reasonable
+accuracy.
+
+Four-quarter relationship reorganization is a qualitatively different
+prediction problem.  After the initial shock, firms can renegotiate contracts,
+draw down inventory buffers, switch to alternative suppliers, or receive
+financing support from affiliated or government-connected creditors.  These
+adaptation responses are largely unobserved in the mandatory disclosure data:
+bilateral transaction volumes, credit terms, network centrality, and inventory
+drawdown plans are not disclosed at quarterly frequency.  The AUC decline from
+0.668 to 0.536 therefore reflects a progressive loss of feature informativeness
+as managerial adaptation and network substitution unfold---not instability in
+the neural network's learned parameters, which remain consistently below the
+null threshold throughout.  The architecture is stable; the four-quarter feature
+set is weak.
+
+This horizon gradient has practical implications for model deployment.  A
+practitioner seeking to flag imminent supply-chain stress would find the model
+most useful at one- and two-quarter horizons, where the MLP achieves AUC above
+0.65 and outperforms the logistic benchmark.  For longer-run relationship
+reorganization forecasting, the model adds little beyond the logistic baseline,
+and richer data on bilateral transactions, supplier substitutability, and
+network topology would be needed to improve discrimination.
 
 \subsection{Calibration and Residual Diagnostics}
 
@@ -510,8 +580,8 @@ largest distance (0.490) is less than one-third of the null threshold
 (1.534).  For comparison, the 20 same-data null models yield distances of
 1.27--1.66---all substantially above the cross-period distances.  The
 parameter shift attributable to new data is therefore smaller than the
-noise from changing the random seed on the same data: a clear stability
-result.
+noise from changing the random seed on the same data: evidence of parameter
+stability.
 
 Panel B shows rolling one-year-ahead AUC, which fluctuates between 0.516
 and 0.578 with no monotone trend.  The stable parameters in Panel A do
@@ -623,7 +693,8 @@ pattern when the feature set is informative but incomplete.  A feature set
 that was truly uninformative would produce both low accuracy and unstable
 parameters; a feature set that fully described the outcome would produce
 both high accuracy and stability.  Our finding places this application
-somewhere in between.
+somewhere in between, with the important qualification that short-horizon
+predictability substantially exceeds four-quarter predictability.
 
 \subsection{The Role of Upstream Climate Exposure}
 
@@ -656,9 +727,10 @@ use risk surfaces to look for model-implied heterogeneity that might
 otherwise be obscured by aggregate metrics.
 
 In our application, passing all four checks yields a consistent message:
-the model is stable and directionally sensible, but accuracy is limited,
-and deploying it for operational risk scoring requires acknowledging this
-limitation.
+the model is stable and its top-ranked predictors are economically
+interpretable, but accuracy is limited at four quarters, and deploying it
+for operational risk scoring requires acknowledging this limitation and
+matching the forecast horizon to the decision context.
 
 \subsection{Limitations}
 
@@ -667,10 +739,10 @@ institutional context; the stability and importance findings may not extend
 to markets with different disclosure rules or financial structures.  The
 feature set is restricted to publicly observable accounting and climate
 variables; bilateral transaction data would be needed to improve accuracy
-substantially.  The MLP architecture is deliberately simple; a systematic
-architecture search or alternative classifiers might reveal further
-structure, though our findings suggest the binding constraint is feature
-informativeness rather than model capacity.  Finally, the stability test we
+substantially.  Extended model comparison and architecture-sensitivity checks
+in the appendix do not reveal a flexible classifier that dominates the simple
+logit or baseline MLP on the four-quarter target, though shorter horizons are
+meaningfully more predictable.  Finally, the stability test we
 apply compares cross-period distances to a same-data random-seed null; more
 demanding tests could compare against out-of-distribution samples or
 adversarial perturbations.
@@ -688,7 +760,7 @@ ranging from 0.516 to 0.578 across five windows.  Neither model provides
 strong discrimination.  Second, normalized-parameter-distance diagnostics
 show that successive MLP parameter vectors remain consistently below the
 95th-percentile null threshold (maximum distance 0.490, threshold 1.534),
-confirming structural stability independently of accuracy.
+providing evidence of structural stability independently of accuracy.
 
 The limited predictive gain is itself informative: it indicates that
 bilateral supply-chain disruption decisions contain a large
@@ -702,6 +774,14 @@ architecture is reliable in the sense that what it learns is consistent over
 time; it is limited in the sense that the features it learns from do not
 fully describe the outcome.
 
+The horizon analysis provides the paper's strongest positive finding.
+The MLP AUC declines from 0.668 at one quarter to 0.536 at four quarters,
+reflecting a progressive loss of feature informativeness as managerial
+adaptation and network substitution unfold.  The architecture is stable
+throughout this gradient; the bottleneck is the four-quarter feature set,
+not model capacity.  Unobserved contracts, supplier substitution, and
+managerial adaptation matter more as the horizon extends.
+
 Permutation importance identifies customer size, seasonal timing, and
 customer age as the dominant predictors.  Upstream climate exposure
 contributes positively but at a secondary level, consistent with the
@@ -713,12 +793,15 @@ levels---that the simple logistic benchmark does not represent, though these
 should be read as descriptive patterns rather than causal mechanisms.
 
 The broader takeaway for computational economics is methodological.  In
-prediction tasks with strong unobservable components, documenting structural
-model stability and reporting accuracy honestly across multiple evaluation
-windows are both necessary steps before claiming any practical utility.
-Future work should enrich the feature set with network-topology and
-bilateral transaction data, and extend the stability framework to
-alternative architectures and forecast horizons.
+prediction tasks with unmeasured relationship-specific determinants,
+documenting structural model stability and reporting accuracy across multiple
+evaluation windows are both needed before interpreting practical utility.
+The appendix results add one constructive qualification: supply-chain
+disruption is much more predictable at one- and two-quarter horizons than at
+the four-quarter horizon.  Future work should therefore enrich the feature set
+with network-topology and bilateral transaction data, and distinguish more
+carefully between short-run warning systems and longer-run relationship
+reorganization forecasts.
 
 %%==========================================================================
 %% REFERENCES
@@ -737,7 +820,8 @@ alternative architectures and forecast horizons.
 \centering
 \caption{Feature Descriptions}\label{tab:features}
 \begin{threeparttable}
-\begin{tabular}{lll}
+\scriptsize
+\begin{tabular}{@{}p{0.23\linewidth}p{0.50\linewidth}p{0.19\linewidth}@{}}
 \toprule
 Feature & Label & Category \\
 \midrule
@@ -761,9 +845,9 @@ quarter\_cos & Quarter seasonality (cosine encoding) & Temporal \\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
-  \small
-  \item \textit{Notes}: Affected equals one when the customer's upstream
-  focal firm simultaneously faces financing constraints and is exposed to
+  \scriptsize
+  \item \textit{Notes}: Affected measures the customer's exposure to
+  upstream focal firms that simultaneously face financing constraints and
   extreme precipitation, following the construction in
   \citet{original2024climate}.  Climate\_CityC is the log intensity of
   extreme precipitation in the customer's registered city.
@@ -780,6 +864,7 @@ quarter\_cos & Quarter seasonality (cosine encoding) & Temporal \\
 \centering
 \caption{Holdout Predictive Performance, 2022--2023}\label{tab:holdout}
 \begin{threeparttable}
+\small
 \begin{tabular}{lcccccc}
 \toprule
 Model & Train $n$ & Test $n$ & AUC & Avg.\ Precision & Brier & Obs.\ Rate \\
@@ -859,6 +944,42 @@ Train cutoff & Eval year & Train $n$ & $d_t$ & Null $q_{0.95}$ & AUC \\
 \end{threeparttable}
 \end{table}
 
+\bigskip
+
+\begin{table}[H]
+\centering
+\caption{Summary of Key Results Across Configurations}\label{tab:summary}
+\begin{threeparttable}
+\small
+\begin{tabular}{llcc}
+\toprule
+Configuration & Horizon & AUC & Source \\
+\midrule
+\multicolumn{4}{l}{\textit{Four-quarter target (primary analysis)}} \\
+MLP (12,6) baseline     & 4 quarters & 0.536 & Table~\ref{tab:holdout} \\
+Logit (linear benchmark)& 4 quarters & 0.544 & Table~\ref{tab:holdout} \\
+Ridge logit (best alternative) & 4 quarters & 0.544 & Table~\ref{tab:appendix_model} \\
+Random forest           & 4 quarters & 0.542 & Table~\ref{tab:appendix_model} \\
+Architecture range (5 specs.) & 4 quarters & 0.529--0.557 & Table~\ref{tab:appendix_architecture} \\
+\midrule
+\multicolumn{4}{l}{\textit{Short-horizon results (strongest positive finding)}} \\
+MLP (12,6)              & 1 quarter  & 0.668 & Table~\ref{tab:appendix_horizons} \\
+MLP (12,6)              & 2 quarters & 0.656 & Table~\ref{tab:appendix_horizons} \\
+Logit benchmark         & 1 quarter  & 0.624 & Table~\ref{tab:appendix_horizons} \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+  \small
+  \item \textit{Notes}: All configurations use the same pre-2022 training
+  sample (2,945 observations) and 2022--2023 holdout (1,243 observations).
+  Short-horizon targets redefine the outcome as $\mathbf{1}\{\sum_{h=1}^{H}
+  \textit{Ter\_q\_qh}>0\}$ for $H\in\{1,2\}$ using the same training split.
+  Architecture range shows minimum and maximum AUC across five MLP
+  specifications with 153--3,265 parameters.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
 %%==========================================================================
 %% FIGURES
 %%==========================================================================
@@ -873,8 +994,8 @@ Train cutoff & Eval year & Train $n$ & $d_t$ & Null $q_{0.95}$ & AUC \\
 observations with a positive four-quarter forward net termination
 ($\textit{BreakRisk4Q}=1$).  Panel B reports sample means of the
 customer-city extreme-precipitation variable (Climate\_CityC) and the
-upstream climate exposure variable (Affected), which equals one when
-the focal upstream firm simultaneously faces financing constraints and
+upstream climate exposure variable (Affected), which measures exposure to
+upstream focal firms that simultaneously face financing constraints and
 extreme precipitation.  Light bars flag years with fewer than 50
 observations.  Total sample: 4,188 customer-quarter observations,
 2011--2023.}
@@ -926,9 +1047,9 @@ null threshold ($q_{0.95}^{\text{null}} = 1.534$) from 20
 random-seed perturbations of the 2018 reference model.  All $d_t$
 lie well below the threshold.  Panel B reports the corresponding
 rolling one-year-ahead AUC.  Stable parameters in Panel A do not
-translate into improving accuracy in Panel B, confirming that accuracy
-is constrained by feature informativeness rather than model
-architecture.}
+translate into improving accuracy in Panel B, consistent with the view
+that accuracy is constrained by feature informativeness rather than model
+architecture alone.}
 \label{fig:stability}
 \end{figure}
 
@@ -978,8 +1099,8 @@ interpreted as causal effects.}
 %%--------------------------------------------------------------------------
 
 Table~\ref{tab:bootstrap} reports 95\% bootstrap confidence intervals
-(1,000 draws with replacement) for AUC, average precision (AP), and Brier
-score in each rolling one-year-ahead evaluation window, plus a combined
+(1,000 draws with replacement, seed 0) for AUC, average precision (AP), and
+Brier score in each rolling one-year-ahead evaluation window, plus a combined
 approximation for the 2022--2023 holdout period.  Confidence intervals are
 computed from the saved rolling predictions and do not require re-running
 the MLP.
@@ -1028,70 +1149,205 @@ static firm-level observables carry genuine but small discriminative
 information about forward supply-chain disruption risk.
 
 %%--------------------------------------------------------------------------
-\section{Additional Experiments: Code and Planned Analyses}
-\label{app:additional}
+\section{Extended Model Comparison}\label{app:model}
 %%--------------------------------------------------------------------------
 
-Four additional sets of experiments are provided as Python scripts in the
-\texttt{appendix\_code/} directory of the replication package.  These require
-the original Stata data file; the scripts are designed to run with the same
-\texttt{common.py} utilities used for the main figures.  Results are deposited
-to \texttt{appendix\_data/} and can be reproduced by running the scripts in
-order.
+Table~\ref{tab:appendix_model} compares the baseline MLP with four alternative
+classifiers on the same 2022--2023 holdout split.  The results are produced by
+the corresponding Appendix B replication script.
 
-\subsection{Appendix B: Extended Model Comparison
-  (\texttt{appendix\_b\_model\_comparison.py})}
+\begin{table}[H]
+\centering
+\caption{Extended Model Comparison, 2022--2023 Holdout}\label{tab:appendix_model}
+\begin{threeparttable}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Model & AUC & 95\% CI (AUC) & AP & Brier \\
+\midrule
+MLP (12,6)          & 0.536 & {[0.502, 0.571]} & 0.598 & 0.252 \\
+Logit (C=1)         & 0.544 & {[0.512, 0.576]} & 0.591 & 0.250 \\
+Ridge logit (C=0.1) & 0.544 & {[0.512, 0.576]} & 0.590 & 0.250 \\
+Random forest       & 0.542 & {[0.509, 0.575]} & 0.590 & 0.256 \\
+Gradient boosting   & 0.528 & {[0.497, 0.559]} & 0.586 & 0.264 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+  \small
+  \item \textit{Notes}: All models use the same training sample
+  (2,945 observations), holdout sample (1,243 observations), and 17-feature
+  information set unless the estimator internally handles scaling.  Confidence
+  intervals use 1,000 bootstrap resamples of the holdout predictions.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
 
-This script trains five classifiers on the 2022--2023 holdout:
-\begin{enumerate}
-  \item MLP (12,6) -- the main specification;
-  \item Logistic regression (C~$=$~1.0) -- the main benchmark;
-  \item Ridge-penalised logistic regression (C~$=$~0.1);
-  \item Random Forest (100 trees, \texttt{scikit-learn} defaults);
-  \item Histogram Gradient Boosting (300 iterations, early stopping).
-\end{enumerate}
-Bootstrap confidence intervals (1,000 draws) are reported for AUC, AP, and
-Brier score.  If the tree-based models and the MLP produce comparable AUCs,
-this confirms that the predictive ceiling is set by feature informativeness
-rather than model capacity.  If ensemble models substantially outperform the
-MLP and logit, it would suggest that the MLP architecture is underpowered and
-a more flexible model could extract additional signal.
+The extended comparison does not show a clear four-quarter gain from more
+flexible classifiers.  Logit, ridge logit, random forest, and the baseline MLP
+all produce AUCs near 0.54, while gradient boosting performs slightly worse.
+The absence of any model that materially exceeds 0.544 confirms that the
+bottleneck is feature informativeness rather than model capacity.
 
-\subsection{Appendix C: Feature-Group Ablation
-  (\texttt{appendix\_c\_ablation.py})}
+%%--------------------------------------------------------------------------
+\section{Feature-Group Ablation}\label{app:ablation}
+%%--------------------------------------------------------------------------
 
-Six feature subsets are evaluated on the primary holdout: climate variables
-only; supply-chain characteristics only; customer financial variables only;
-governance variables only; climate~$+$~finance jointly; and the full feature
-set.  Both MLP and logistic regression are trained on each subset.  This
-ablation quantifies how much of the discriminative signal comes from each
-conceptual group.  If climate-only AUC is close to 0.5 but finance-only AUC
-is substantially above 0.5, this would confirm that firm characteristics---not
-climate observables---account for most of the available signal.
+Table~\ref{tab:appendix_ablation} reports feature-group ablation results from
+the corresponding Appendix C replication script.  For compactness the table
+reports AUC and AP; the replication CSV also reports Brier scores.
 
-\subsection{Appendix D: Alternative Forecast Horizons
-  (\texttt{appendix\_d\_horizons.py})}
+\begin{table}[H]
+\centering
+\caption{Feature-Group Ablation, 2022--2023 Holdout}\label{tab:appendix_ablation}
+\begin{threeparttable}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Feature group & Features & MLP AUC & Logit AUC & MLP AP & Logit AP \\
+\midrule
+Climate only       & 3  & 0.492 & 0.528 & 0.562 & 0.578 \\
+Supply chain only  & 2  & 0.498 & 0.512 & 0.553 & 0.564 \\
+Finance only       & 5  & 0.536 & 0.527 & 0.579 & 0.561 \\
+Governance only    & 4  & 0.467 & 0.494 & 0.543 & 0.553 \\
+Climate + finance  & 8  & 0.540 & 0.536 & 0.571 & 0.570 \\
+All features       & 17 & 0.536 & 0.544 & 0.598 & 0.591 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+  \small
+  \item \textit{Notes}: Each row trains the MLP and logit on the listed
+  feature subset using the same temporal split as the main holdout.  The
+  all-features row reproduces the main holdout comparison.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
 
-Four target variables are constructed: $\textit{BreakRiskHQ}
-= \mathbf{1}\{\sum_{h=1}^{H}\textit{Ter\_q\_qh} > 0\}$ for
-$H \in \{1, 2, 3, 4\}$.  MLP and logistic regression are trained and
-evaluated on the primary holdout for each horizon.  If shorter horizons
-(e.g., one quarter ahead) are more predictable than the four-quarter target
-used in the main analysis, this would suggest that some of the disruption
-signal decays over time and shorter-horizon targets could support more
-reliable early-warning systems.
+The ablation results show that finance variables account for more of the
+four-quarter discrimination than the climate-only or governance-only feature
+sets.  Climate-only MLP AUC is 0.492, below the random-classifier baseline,
+while finance-only MLP matches the full-model AUC at 0.536.  Adding climate
+variables to finance variables raises MLP AUC only slightly, from 0.536 to
+0.540.  The full 17-feature logit marginally outperforms the full 17-feature
+MLP (0.544 vs.\ 0.536), confirming that the four-quarter feature set is the
+binding constraint, not model architecture.
 
-\subsection{Appendix E: MLP Architecture Sensitivity
-  (\texttt{appendix\_e\_architecture.py})}
+%%--------------------------------------------------------------------------
+\section{Alternative Forecast Horizons}\label{app:horizons}
+%%--------------------------------------------------------------------------
 
-Five MLP architectures are compared on the primary holdout:
-$(8{,})$, $(12{,}6)$, $(16{,}8)$, $(32{,}16)$, $(64{,}32)$.  For each
-architecture, the script reports AUC, AP, Brier score, and the normalized
-Frobenius distance from the baseline $(12{,}6)$ model.  If wider or deeper
-architectures yield similar AUC to the baseline, this supports the
-conclusion that the bottleneck is feature informativeness rather than model
-capacity.  Large parameter distances between architectures would indicate
-that different capacity choices converge to qualitatively different
-representations of the prediction problem.
+Table~\ref{tab:appendix_horizons} reports alternative target horizons from
+the corresponding Appendix D replication script.  The target is
+$\mathbf{1}\{\sum_{h=1}^{H}\textit{Ter\_q\_qh} > 0\}$ for
+$H \in \{1,2,3,4\}$.
+
+\begin{table}[H]
+\centering
+\caption{Alternative Forecast Horizons, 2022--2023 Holdout}\label{tab:appendix_horizons}
+\begin{threeparttable}
+\small
+\begin{tabular}{ccccccc}
+\toprule
+Horizon & Obs. rate & MLP AUC & Logit AUC & MLP AP & Logit AP & MLP Brier \\
+\midrule
+1 quarter  & 0.234 & 0.668 & 0.624 & 0.347 & 0.280 & 0.175 \\
+2 quarters & 0.385 & 0.656 & 0.628 & 0.521 & 0.499 & 0.227 \\
+3 quarters & 0.484 & 0.607 & 0.604 & 0.575 & 0.566 & 0.249 \\
+4 quarters & 0.560 & 0.536 & 0.544 & 0.598 & 0.591 & 0.252 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+  \small
+  \item \textit{Notes}: All rows use the same pre-2022 training sample and
+  2022--2023 holdout.  The four-quarter row is the main target in the paper.
+  The replication CSV also reports logit Brier scores.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Predictability is substantially stronger at short horizons.  The MLP reaches
+AUC 0.668 for one-quarter disruptions and 0.656 for two-quarter disruptions,
+but the AUC declines to 0.536 for the four-quarter target.  At one and two
+quarters the MLP also outperforms the logistic benchmark, whereas at three
+and four quarters the logit is marginally ahead.  The horizon gradient
+reflects a progressive loss of feature informativeness as managerial
+adaptation and network substitution erode the predictive content of static
+observables over longer periods.
+
+%%--------------------------------------------------------------------------
+\section{MLP Architecture Sensitivity}\label{app:architecture}
+%%--------------------------------------------------------------------------
+
+Table~\ref{tab:appendix_architecture} compares five MLP architectures using
+the corresponding Appendix E replication script.  We report parameter counts
+rather than cross-architecture parameter distances because networks with
+different hidden-layer widths have parameter vectors of different dimensions;
+cross-architecture Frobenius distances are not comparable.
+
+\begin{table}[H]
+\centering
+\caption{MLP Architecture Sensitivity, 2022--2023 Holdout}\label{tab:appendix_architecture}
+\begin{threeparttable}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Architecture & Parameters & AUC & AP & Brier \\
+\midrule
+(8,)     & 153  & 0.552 & 0.612 & 0.253 \\
+(12,6)   & 301  & 0.536 & 0.598 & 0.252 \\
+(16,8)   & 433  & 0.529 & 0.579 & 0.257 \\
+(32,16)  & 1,121 & 0.557 & 0.619 & 0.260 \\
+(64,32)  & 3,265 & 0.545 & 0.599 & 0.254 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+  \small
+  \item \textit{Notes}: Each architecture uses ReLU activations, the same
+  optimizer settings as the main model, and the same pre-2022/2022--2023
+  temporal split.  The baseline architecture in the main text is (12,6).
+  Parameter count includes weights and biases across all layers.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Changing the width and depth of the MLP does not materially alter the
+four-quarter conclusion.  AUCs range from 0.529 to 0.557, with no monotone
+relationship between parameter count and predictive performance.  The smallest
+architecture, (8,), achieves the joint-highest AUC (0.552) alongside
+(32,16), while the largest (64,32) scores 0.545.  This non-monotone pattern
+confirms that the four-quarter predictability ceiling reflects feature
+informativeness, not network capacity.
+
+%%--------------------------------------------------------------------------
+\section{Replication Note}\label{app:replication}
+%%--------------------------------------------------------------------------
+
+All results reported in this paper are produced using Python~3.  Machine
+learning models use \texttt{scikit-learn} \citep{pedregosa2011}; data
+handling uses \texttt{pandas} and \texttt{numpy}; the original Stata data
+file is read via \texttt{pyreadstat}; figures are produced with
+\texttt{matplotlib}.  Exact package versions are recorded in the
+\texttt{requirements.txt} file included in the replication archive.
+
+Random seeds are as follows: the main MLP and logistic regression estimates
+use seed 42; the stability null distribution uses seeds 43--62; bootstrap
+resampling in Appendix~\ref{app:bootstrap} uses seed 0 with $B=1{,}000$
+draws.  The architecture sensitivity estimates in Appendix~\ref{app:architecture}
+also use seed 42 for each specification.
+
+To reproduce all results from a clean directory, place the original Stata
+data file in the location specified in \texttt{appendix\_code/common.py}
+and run the five replication scripts in sequence:
+
+\begin{verbatim}
+python appendix_code/appendix_a_bootstrap_ci.py
+python appendix_code/appendix_b_model_comparison.py
+python appendix_code/appendix_c_ablation.py
+python appendix_code/appendix_d_horizons.py
+python appendix_code/appendix_e_architecture.py
+\end{verbatim}
+
+Each script writes output to \texttt{appendix\_data/}.  No result reported
+in the manuscript depends on code that has not been run or data that are not
+generated by these scripts.
 
 \end{document}

@@ -460,14 +460,19 @@ into a meaningful predictive gain in this application.
 The modest AUC is not a failure of the estimation procedure.
 Table~\ref{tab:rolling} shows that rolling one-year-ahead AUCs fluctuate
 between 0.516 and 0.578 across five separate evaluation years, never
-reaching 0.60.  This consistency across windows indicates that limited
-predictability is a structural feature of the task.  Supply-chain
-disruption decisions reflect unobservable contractual terms,
-relationship-specific dynamics, and managerial responses that
-cross-sectional static observables only partially capture.  The AUC
-values are consistently above 0.5, showing that observable firm and
-climate characteristics carry \emph{some} forward-looking information,
-but the signal is weak.
+reaching 0.60.  Bootstrap confidence intervals (Appendix~\ref{app:bootstrap},
+Table~\ref{tab:bootstrap}) sharpen this picture: only the
+2020$\to$2021 window achieves a 95\% CI that clearly excludes 0.5
+(AUC~$=$~0.578, CI~$[$0.542, 0.619$]$).  The remaining four windows return
+confidence intervals that include 0.5, so predictive discrimination above
+random chance cannot be established at the 5\% level in most evaluation
+periods.  This is the most cautious summary of the evidence: the model's
+rank-ordering advantage is statistically fragile, concentrated in a single
+evaluation year, and should not be taken as evidence of reliable early-warning
+capability without further data and richer features.  Supply-chain disruption
+decisions reflect unobservable contractual terms, relationship-specific
+dynamics, and managerial responses that cross-sectional static observables
+only partially capture.
 
 \subsection{Calibration and Residual Diagnostics}
 
@@ -688,10 +693,14 @@ confirming structural stability independently of accuracy.
 The limited predictive gain is itself informative: it indicates that
 bilateral supply-chain disruption decisions contain a large
 relationship-specific component not captured by static financial and
-climate observables.  The stability result separates this data-informativeness
-limitation from a model-reliability question.  The architecture is reliable
-in the sense that what it learns is consistent over time; it is limited in
-the sense that the features it learns from do not fully describe the outcome.
+climate observables.  Bootstrap confidence intervals (Appendix~\ref{app:bootstrap})
+further show that only one of five rolling evaluation windows achieves an
+AUC confidence interval that clearly excludes 0.5; the predictive advantage
+over random chance is statistically fragile.  The stability result separates
+this data-informativeness limitation from a model-reliability question.  The
+architecture is reliable in the sense that what it learns is consistent over
+time; it is limited in the sense that the features it learns from do not
+fully describe the outcome.
 
 Permutation importance identifies customer size, seasonal timing, and
 customer age as the dominant predictors.  Upstream climate exposure
@@ -956,5 +965,133 @@ model-implied associations in the holdout data and should not be
 interpreted as causal effects.}
 \label{fig:surface}
 \end{figure}
+
+%%==========================================================================
+%% APPENDIX
+%%==========================================================================
+\newpage
+\appendix
+
+%%--------------------------------------------------------------------------
+\section{Bootstrap Confidence Intervals for Rolling AUC and AP}
+\label{app:bootstrap}
+%%--------------------------------------------------------------------------
+
+Table~\ref{tab:bootstrap} reports 95\% bootstrap confidence intervals
+(1,000 draws with replacement) for AUC, average precision (AP), and Brier
+score in each rolling one-year-ahead evaluation window, plus a combined
+approximation for the 2022--2023 holdout period.  Confidence intervals are
+computed from the saved rolling predictions and do not require re-running
+the MLP.
+
+\begin{table}[H]
+\centering
+\caption{Bootstrap Confidence Intervals, Rolling One-Year-Ahead MLP
+  ($B = 1{,}000$ resamples)}\label{tab:bootstrap}
+\begin{threeparttable}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Window & $n$ & AUC & 95\% CI (AUC) & AP & 95\% CI (AP) \\
+\midrule
+2018$\to$2019 & 333  & 0.528 & {[0.462, 0.599]} & 0.510 & {[0.443, 0.598]} \\
+2019$\to$2020 & 639  & 0.526 & {[0.481, 0.569]} & 0.494 & {[0.447, 0.551]} \\
+2020$\to$2021 & 806  & 0.578 & \textbf{[0.542, 0.619]} & 0.580 & {[0.530, 0.635]} \\
+2021$\to$2022 & 918  & 0.516 & {[0.482, 0.552]} & 0.608 & {[0.564, 0.656]} \\
+2022$\to$2023 & 325  & 0.564 & {[0.501, 0.624]} & 0.558 & {[0.484, 0.646]} \\
+\midrule
+2022+2023 (approx.) & 1,243 & 0.518 & {[0.487, 0.550]} & 0.585 & {[0.546, 0.625]} \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+  \small
+  \item \textit{Notes}: Each window trains the MLP on data through the
+  listed cutoff year and evaluates on the following year.  The
+  ``2022+2023 (approx.)'' row pools rolling predictions for 2022 and 2023
+  using separate one-year-ahead models; it approximates but is not identical
+  to the primary holdout (which trains a single model through 2021).  Bold
+  CI indicates the only window where the 95\% interval excludes 0.5: the
+  2020$\to$2021 evaluation.  All other windows have AUC confidence intervals
+  that include 0.5, so their predictive advantage over a random classifier
+  cannot be established at the 5\% significance level.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+The bootstrap results reinforce the main text interpretation.  The observed
+AUCs of 0.516--0.578 are not statistically distinguishable from 0.5 in four
+of five windows; only the 2020$\to$2021 window achieves marginal statistical
+significance.  The narrow confidence intervals in the larger-sample windows
+(2019--2022) reflect higher precision in the estimation of a weak signal, not
+a stronger signal.  These results are consistent with the interpretation that
+static firm-level observables carry genuine but small discriminative
+information about forward supply-chain disruption risk.
+
+%%--------------------------------------------------------------------------
+\section{Additional Experiments: Code and Planned Analyses}
+\label{app:additional}
+%%--------------------------------------------------------------------------
+
+Four additional sets of experiments are provided as Python scripts in the
+\texttt{appendix\_code/} directory of the replication package.  These require
+the original Stata data file; the scripts are designed to run with the same
+\texttt{common.py} utilities used for the main figures.  Results are deposited
+to \texttt{appendix\_data/} and can be reproduced by running the scripts in
+order.
+
+\subsection{Appendix B: Extended Model Comparison
+  (\texttt{appendix\_b\_model\_comparison.py})}
+
+This script trains five classifiers on the 2022--2023 holdout:
+\begin{enumerate}
+  \item MLP (12,6) -- the main specification;
+  \item Logistic regression (C~$=$~1.0) -- the main benchmark;
+  \item Ridge-penalised logistic regression (C~$=$~0.1);
+  \item Random Forest (100 trees, \texttt{scikit-learn} defaults);
+  \item Histogram Gradient Boosting (300 iterations, early stopping).
+\end{enumerate}
+Bootstrap confidence intervals (1,000 draws) are reported for AUC, AP, and
+Brier score.  If the tree-based models and the MLP produce comparable AUCs,
+this confirms that the predictive ceiling is set by feature informativeness
+rather than model capacity.  If ensemble models substantially outperform the
+MLP and logit, it would suggest that the MLP architecture is underpowered and
+a more flexible model could extract additional signal.
+
+\subsection{Appendix C: Feature-Group Ablation
+  (\texttt{appendix\_c\_ablation.py})}
+
+Six feature subsets are evaluated on the primary holdout: climate variables
+only; supply-chain characteristics only; customer financial variables only;
+governance variables only; climate~$+$~finance jointly; and the full feature
+set.  Both MLP and logistic regression are trained on each subset.  This
+ablation quantifies how much of the discriminative signal comes from each
+conceptual group.  If climate-only AUC is close to 0.5 but finance-only AUC
+is substantially above 0.5, this would confirm that firm characteristics---not
+climate observables---account for most of the available signal.
+
+\subsection{Appendix D: Alternative Forecast Horizons
+  (\texttt{appendix\_d\_horizons.py})}
+
+Four target variables are constructed: $\textit{BreakRiskHQ}
+= \mathbf{1}\{\sum_{h=1}^{H}\textit{Ter\_q\_qh} > 0\}$ for
+$H \in \{1, 2, 3, 4\}$.  MLP and logistic regression are trained and
+evaluated on the primary holdout for each horizon.  If shorter horizons
+(e.g., one quarter ahead) are more predictable than the four-quarter target
+used in the main analysis, this would suggest that some of the disruption
+signal decays over time and shorter-horizon targets could support more
+reliable early-warning systems.
+
+\subsection{Appendix E: MLP Architecture Sensitivity
+  (\texttt{appendix\_e\_architecture.py})}
+
+Five MLP architectures are compared on the primary holdout:
+$(8{,})$, $(12{,}6)$, $(16{,}8)$, $(32{,}16)$, $(64{,}32)$.  For each
+architecture, the script reports AUC, AP, Brier score, and the normalized
+Frobenius distance from the baseline $(12{,}6)$ model.  If wider or deeper
+architectures yield similar AUC to the baseline, this supports the
+conclusion that the bottleneck is feature informativeness rather than model
+capacity.  Large parameter distances between architectures would indicate
+that different capacity choices converge to qualitatively different
+representations of the prediction problem.
 
 \end{document}

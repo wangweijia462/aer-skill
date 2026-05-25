@@ -33,6 +33,7 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
 
 % ===== Theorem environments =====
 \newtheorem{prediction}{Prediction}
@@ -80,7 +81,7 @@ This paper asks whether firm-level AI adoption creates inclusive employment gain
 \label{sec:intro}
 % ============================================================
 
-China's labor market faces a distinctive tension. The number of college graduates has risen sharply, from roughly 1.1 million in 2000 to over 11 million in 2023 (Ministry of Education, 2024). Digital and manufacturing firms simultaneously report persistent shortages of applied technical workers \citep{ilo2020skills}. Many young graduates enter jobs that do not use their education, while other workers lack the cognitive and technical skills that rapidly automating firms need. These pressures arise against a backdrop of rising wage inequality that has attracted sustained attention since the early reform era \citep{knight2003, knight2014}: the returns to education in China have shifted considerably over the past three decades, and technology adoption is one of the forces driving that shift. In this setting, the central question about artificial intelligence is not simply whether it destroys jobs, nor simply whether it raises wages on average. The more relevant question is whether AI creates employment and earnings opportunities that match workers' skills, and how pre-existing mismatch determines who captures the gains.
+China's labor market faces a distinctive tension. The number of college graduates has risen sharply, from roughly 1.1 million in 2000 to over 11 million in 2023 \citep{moe2024}. Digital and manufacturing firms simultaneously report persistent shortages of applied technical workers \citep{ilo2020skills}. Many young graduates enter jobs that do not use their education, while other workers lack the cognitive and technical skills that rapidly automating firms need. These pressures arise against a backdrop of rising wage inequality that has attracted sustained attention since the early reform era \citep{knight2003, knight2014}: the returns to education in China have shifted considerably over the past three decades, and technology adoption is one of the forces driving that shift. In this setting, the central question about artificial intelligence is not simply whether it destroys jobs, nor simply whether it raises wages on average. The more relevant question is whether AI creates employment and earnings opportunities that match workers' skills, and how pre-existing mismatch determines who captures the gains \citep{brynjolfsson2014second}.
 
 This paper estimates how firm-level AI adoption affects employment quantity and skill composition in China, and how pre-existing overeducation and skill mismatch condition these effects. The analysis uses panel data on Chinese A-share listed firms from 2010 to 2022. AI adoption is measured from firms' annual reports using AI-related text, including terms such as artificial intelligence, machine learning, deep learning, and large language models. The main outcomes are total employment, the share of employees with a bachelor's degree or above (high-skilled), and the share of employees with high-school education or below (low-skilled). The key moderator is firm-level overeducation, defined as the excess of workers' actual education over the education typically required by the jobs they hold. I also use an industry-level skill mismatch index to test whether broader labor-market mismatch weakens AI's employment effect.
 
@@ -92,7 +93,7 @@ The second result is that AI reallocates jobs across skill groups. IV estimates 
 
 The third result is that institutions shape the returns to AI. An industry skill mismatch index negatively moderates AI's employment effect (\(AI \times \SMI = -0.004\)). Better employment matching mitigates the adverse interaction between AI and overeducation. General higher education quality can paradoxically amplify mismatch when it expands academic credentials without aligning them with industry task demand.
 
-The paper contributes to three literatures. First, it adds firm-level evidence on automation, task-biased technological change, and labor demand \citep{autor2003skill, acemoglu2018artificial, acemoglu2020robots, acemoglu2022tasks, acemoglu2026automation}. Rather than asking only whether technology substitutes for labor, it shows how AI changes total employment and the skill mix inside Chinese firms, and derives from the task model the implied direction of change in the skill wage premium. Second, it connects this literature with research on overeducation and skill mismatch \citep{mcguinness2006overeducation, pellizzari2017new}. The results show that mismatch is not merely an outcome of labor-market adjustment; it is a state variable that governs whether AI adoption generates inclusive employment and earnings gains. Third, the paper contributes to the empirical literature on income distribution and labor-market adjustment in China. Research in this tradition has documented how education returns, wage gaps, and employment structure have evolved through China's transition \citep{knight2003, knight2014}. The present paper extends that agenda by examining how a new wave of technology adoption interacts with the educational mismatches that accumulated during rapid credential expansion, shaping the distributive consequences of AI for workers at different points in the skill distribution.
+The paper contributes to three literatures. First, it adds firm-level evidence on automation, task-biased technological change, and labor demand \citep{autor2003skill, autor2018automation, goos2007lousy, goos2014explaining, acemoglu2018artificial, acemoglu2020robots, acemoglu2022tasks, acemoglu2026automation}. Rather than asking only whether technology substitutes for labor, it shows how AI changes total employment and the skill mix inside Chinese firms, and derives from the task model the implied direction of change in the skill wage premium. Second, it connects this literature with research on overeducation and skill mismatch \citep{mcguinness2006overeducation, pellizzari2017new}. The results show that mismatch is not merely an outcome of labor-market adjustment; it is a state variable that governs whether AI adoption generates inclusive employment and earnings gains. Third, the paper contributes to the empirical literature on income distribution and labor-market adjustment in China. Research in this tradition has documented how education returns, wage gaps, and employment structure have evolved through China's transition \citep{knight2003, knight2014}. The present paper extends that agenda by examining how a new wave of technology adoption interacts with the educational mismatches that accumulated during rapid credential expansion, shaping the distributive consequences of AI for workers at different points in the skill distribution.
 
 The rest of the paper proceeds as follows. Section~\ref{sec:framework} develops a task-based conceptual framework. Section~\ref{sec:data} describes the data and variable construction. Section~\ref{sec:strategy} presents the empirical strategy. Section~\ref{sec:results} reports the main estimates. Section~\ref{sec:robust} presents robustness checks. Section~\ref{sec:concl} concludes.
 
@@ -103,7 +104,7 @@ The rest of the paper proceeds as follows. Section~\ref{sec:framework} develops 
 
 \subsection{Tasks, AI Adoption, and Employment}
 
-The framework starts from the task approach to technological change \citep{autor2003skill, acemoglu2018artificial, acemoglu2022tasks}. Firms produce output by combining tasks that differ in complexity. AI adoption lowers the cost of performing some tasks with capital and software, creating a displacement force for workers assigned to automatable routine tasks. It also creates a productivity and reinstatement force when AI raises output, expands demand, and opens new human-machine complementary tasks.
+The framework starts from the task approach to technological change \citep{autor2003skill, acemoglu2018artificial, acemoglu2022tasks}. Firms produce output by combining tasks that differ in complexity. AI adoption lowers the cost of performing some tasks with capital and software, creating a displacement force for workers assigned to automatable routine tasks. It also creates a productivity and reinstatement force when AI raises output, expands demand, and opens new human-machine complementary tasks \citep{aghion1992model, acemoglu2022tasks}.
 
 Let \(Y_{it}\) denote firm \(i\)'s employment outcome in year \(t\). The outcome can be total employment, the high-skilled employment share, or the low-skilled employment share. AI adoption affects \(Y_{it}\) through two channels:
 \[
@@ -120,7 +121,7 @@ AI adoption increases total employment when productivity and new-task effects do
 
 \subsection{Overeducation and Skill Composition}
 
-Overeducation captures a mismatch between workers' educational attainment and the requirements of jobs they hold. It can help or hurt adjustment to AI through two channels. On one side, workers with more education may have greater learning capacity and can move out of routine jobs more easily, softening low-skilled displacement; this is the human-capital buffer channel. On the other side, excess credentials without task-specific AI skills create redundancy: highly educated workers may be concentrated in tasks that AI can partially perform, and their training does not map into the new tasks firms need; this is the skill-redundancy trap.
+Overeducation captures a mismatch between workers' educational attainment and the requirements of jobs they hold. It can help or hurt adjustment to AI through two channels. On one side, workers with more education may have greater learning capacity and can move out of routine jobs more easily, softening low-skilled displacement \citep{becker1964human}; this is the human-capital buffer channel. On the other side, excess credentials without task-specific AI skills create redundancy: highly educated workers may be concentrated in tasks that AI can partially perform, and their training does not map into the new tasks firms need \citep{spence1973job}; this is the skill-redundancy trap.
 
 The sign of \(AI_{it} \times \Overedu_{it}\) therefore depends on the outcome variable. For total and high-skilled employment, overeducation can weaken AI's complementary effect when educated workers are not matched to AI-complementary tasks. For low-skilled employment, overeducation may soften displacement when general human capital helps workers transition across tasks.
 
@@ -153,7 +154,7 @@ where $T_\theta(AI_{it})$ is the set of tasks allocated to type $\theta$ given t
 \]
 under the same conditions that generate the employment reallocation in Predictions~\ref{pred:total} and~\ref{pred:overedu}. In this sense the employment share results are a sufficient statistic for the direction of AI's effect on within-firm wage inequality, given an estimated skill premium.
 
-Overeducation modulates this distributional channel through its effect on effective productivity. When a worker's credentials exceed the requirements of available AI-complementary tasks, $A_h(x)$ at the new task margin is lower than it would be for a correctly matched worker, because the worker's training is misaligned with the specific cognitive demands of those tasks. This reduces the wage gain attributable to AI adoption, so that:
+Overeducation modulates this distributional channel through its effect on effective productivity. In the tradition of \citet{nelson1966investment}, the ability to absorb and implement new technologies depends on the match between workers' education and the cognitive demands of those technologies. When a worker's credentials exceed the requirements of available AI-complementary tasks, $A_h(x)$ at the new task margin is lower than it would be for a correctly matched worker, because the worker's training is misaligned with the specific cognitive demands of those tasks. This reduces the wage gain attributable to AI adoption, so that:
 \[
 \frac{\partial^2 \ln \pi_{it}}{\partial AI_{it}\, \partial \Overedu_{it}} < 0.
 \]
@@ -163,6 +164,71 @@ Overeducation thus compresses the skill premium that AI adoption would otherwise
 \label{pred:wage}
 AI adoption raises the within-firm skill wage premium under conditions of positive high-skill complementarity and low-skill displacement. Overeducation compresses this distributional effect by reducing effective productivity at the AI-complementary task margin. Industry skill mismatch amplifies dispersion in returns when it concentrates displacement on low-skilled workers without providing reallocation channels. This prediction extends Predictions~\ref{pred:total}--\ref{pred:buffers} to income distribution consequences and maps to the discussion in Section~\ref{sec:concl}.
 \end{prediction}
+
+Figure~\ref{fig:taskspace} summarises the mechanism. The upper bar shows task allocation before AI adoption, divided into routine low-skill tasks (left) and non-routine high-skill tasks (right). The lower bar shows the post-AI allocation: a subset of routine tasks is automated, reducing low-skill task variety and putting downward pressure on $w_L$; new AI-complementary tasks are created at the high-complexity margin, raising $w_H$. The box at the bottom of the figure captures the overeducation moderating channel: when workers' credentials exceed task requirements, their effective productivity $A_h(x)$ at the new-task margin is reduced, compressing the resulting skill premium.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[xscale=0.93]
+
+% ---- BEFORE AI ----
+\node[anchor=east, font=\small] at (-0.2, 1.2) {Before AI:};
+\fill[blue!20] (0, 0.7) rectangle (4.8, 1.7);
+\node[font=\footnotesize] at (2.4, 1.2) {Routine low-skill tasks};
+\fill[orange!20] (4.8, 0.7) rectangle (10.5, 1.7);
+\node[font=\footnotesize] at (7.65, 1.2) {Non-routine high-skill tasks};
+\draw[thick] (0,0.7) rectangle (10.5,1.7);
+\draw[gray!70, thick, dashed] (4.8,0.7) -- (4.8,2.1);
+\node[font=\tiny, gray!80, above] at (4.8,2.1) {$\tilde{I}$};
+
+% ---- AFTER AI ----
+\node[anchor=east, font=\small] at (-0.2, -0.7) {After AI:};
+\fill[gray!35] (0, -1.2) rectangle (3.0, -0.2);
+\node[font=\tiny, text=gray!80, align=center] at (1.5, -0.7) {Automated\\tasks};
+\fill[blue!15] (3.0, -1.2) rectangle (4.8, -0.2);
+\node[font=\tiny, align=center] at (3.9, -0.7) {Remaining\\low-skill};
+\fill[orange!20] (4.8, -1.2) rectangle (8.7, -0.2);
+\node[font=\footnotesize] at (6.75, -0.7) {High-skill tasks};
+\fill[green!25] (8.7, -1.2) rectangle (10.5, -0.2);
+\node[font=\tiny, align=center, text=green!60!black] at (9.6, -0.7) {New AI\\compl.};
+\draw[thick] (0,-1.2) rectangle (10.5,-0.2);
+\draw[gray!60] (3.0,-1.2) -- (3.0,-0.2);
+\draw[gray!60] (4.8,-1.2) -- (4.8,-0.2);
+\draw[gray!60] (8.7,-1.2) -- (8.7,-0.2);
+
+% Threshold labels
+\draw[red!60, dashed, thin] (3.0,-1.2) -- (3.0,-1.65);
+\node[font=\tiny, red!70, below] at (3.0,-1.65) {$\tilde{I}'$};
+\draw[green!50!black, dashed, thin] (8.7,-1.2) -- (8.7,-1.65);
+\node[font=\tiny, green!60!black, below] at (8.7,-1.65) {$\tilde{N}'$};
+
+% Wage effect arrows
+\draw[->, thick, red!70] (1.5, 0.7) -- (1.5, -0.2);
+\node[font=\footnotesize, right, red!70] at (1.6, 0.27) {$\downarrow w_L$};
+\draw[->, thick, green!60!black] (9.6, -0.2) -- (9.6, 0.7);
+\node[font=\footnotesize, right, green!60!black] at (9.7, 0.27) {$\uparrow w_H$};
+
+% Skill premium arrow
+\draw[<->, thick, purple!80] (1.5, -2.35) -- (9.6, -2.35);
+\node[font=\footnotesize, purple!80, below] at (5.55, -2.45) {Widening skill premium: $\;\partial \ln(w_H/w_L)/\partial AI > 0$};
+
+% Overeducation moderator box
+\draw[rounded corners, draw=orange!60, fill=orange!7] (-0.2,-3.15) rectangle (10.7,-3.95);
+\node[font=\footnotesize, align=center] at (5.25, -3.55)
+  {Overeducation $(\Overedu\uparrow)$: mismatched credentials reduce effective productivity $A_h(x)$ at the new-task margin $\Rightarrow$ compressed premium: $\;\partial^2 \ln(w_H/w_L)/\partial AI\,\partial\Overedu < 0$};
+
+% Task complexity axis
+\draw[->, gray!70] (-0.3, -4.3) -- (10.8, -4.3);
+\node[right, gray!70, font=\small] at (10.8,-4.3) {Task complexity};
+
+\end{tikzpicture}
+\caption{Task Space Reallocation, Wages, and the Overeducation Channel}
+\label{fig:taskspace}
+\begin{minipage}{0.92\textwidth}
+\footnotesize
+Notes: The figure illustrates the mechanism from Section~\ref{sec:wage_theory}. Before AI adoption, tasks are divided into routine low-skill (blue) and non-routine high-skill (orange) segments. AI adoption shifts the automation threshold from $\tilde{I}$ to $\tilde{I}'$, displacing some routine tasks, and creates new AI-complementary tasks at the high-complexity frontier $\tilde{N}'$. The resulting wage effects---$\downarrow w_L$ from displacement and $\uparrow w_H$ from new-task creation---widen the skill premium. Overeducation (orange box) reduces workers' effective productivity at the new-task margin, compressing this distributional effect.
+\end{minipage}
+\end{figure}
 
 The paper does not estimate wage equations directly, and the empirical strategy focuses on employment structure as the primary outcome. This choice reflects data availability: firm-level employment structure is observable from annual reports, while matched worker wages require data that listed-company disclosures do not provide with the necessary coverage. The theoretical prediction nevertheless establishes that the paper's employment findings are not silent on distributional questions. Because employment shares and wages are jointly determined by the same task-allocation equilibrium, evidence that AI shifts the employment mix toward high-skill workers---while overeducation moderates that shift---is at the same time evidence about the forces shaping skill wage inequality in firms at the frontier of AI adoption in China.
 
@@ -277,7 +343,7 @@ The coefficient \(\beta_2\) shows whether overeducation strengthens or weakens A
 
 \subsection{Sources of Identifying Variation}
 
-AI adoption and overeducation may be endogenous. Firms with better management, stronger training systems, or more favorable demand shocks may adopt AI earlier and adjust employment more easily. The identification strategy uses three sources of variation, ordered from primary to supplementary.
+AI adoption and overeducation may be endogenous. Firms with better management, stronger training systems, or more favorable demand shocks may adopt AI earlier and adjust employment more easily \citep{angrist2009mostly}. The identification strategy uses three sources of variation, ordered from primary to supplementary.
 
 \subsubsection{Variation from Education Expansion (Primary)}
 
@@ -300,7 +366,7 @@ AI^{peer}_{irt}
 \sum_{\substack{s\neq i\\s\in(i,r,t)}} AI_{srt},
 \label{eq:peeriv}
 \end{equation}
-where firms \(s\) are in the same industry-region-year cell as firm \(i\), excluding firm \(i\). This instrument captures local industry AI diffusion pressure while removing the firm's own adoption decision. It serves as a secondary instrument for \(AI_{it}\) in specifications where the peer pressure is the main source of exogenous variation in AI adoption. The exclusion restriction requires that, conditional on fixed effects and controls, peer AI adoption affects firm employment through own AI adoption rather than through direct local labor-demand spillovers or shared demand shocks. Table~\ref{tab:firststage} confirms strong first-stage relevance; Section~\ref{sec:altiv} provides exclusion tests showing that adding digital infrastructure and human-capital structure controls leaves first-stage coefficients stable.
+where firms \(s\) are in the same industry-region-year cell as firm \(i\), excluding firm \(i\). This instrument captures local industry AI diffusion pressure while removing the firm's own adoption decision. It serves as a secondary instrument for \(AI_{it}\) in specifications where the peer pressure is the main source of exogenous variation in AI adoption. The exclusion restriction requires that, conditional on fixed effects and controls, peer AI adoption affects firm employment through own AI adoption rather than through direct local labor-demand spillovers or shared demand shocks. Table~\ref{tab:firststage} confirms strong first-stage relevance; Section~\ref{sec:altiv} and the exclusion checks in Section~\ref{sec:excl} provide tests showing that adding digital infrastructure and human-capital structure controls leaves first-stage coefficients stable.
 
 \subsubsection{Variation from Digital Infrastructure (Supplementary Validation)}
 
@@ -308,7 +374,7 @@ The Broadband China pilot policy, which designated cities to receive broadband i
 
 \subsection{Exclusion Restriction Discussion}
 
-The exclusion restriction for the primary Edushock instrument is an economic assumption, not a mechanical fact. The main threat is that industries with higher pre-expansion college intensity may have experienced differential labor demand trends after 1999 for reasons unrelated to AI adoption---for example, if college-intensive industries were also more exposed to trade liberalization or industrial policy. The paper addresses this through: (a) controlling for industry-year fixed effects in selected specifications; (b) controlling for the firm-level human capital structure measure \(Hstruc\), which captures the direct composition effects of education expansion; (c) controlling for regional digital infrastructure \(\mathit{Digit}\); and (d) verifying that the key coefficient remains stable when these controls are added (Table~\ref{tab:eduexclusion}).
+The exclusion restriction for the primary Edushock instrument is an economic assumption, not a mechanical fact. The main threat is that industries with higher pre-expansion college intensity may have experienced differential labor demand trends after 1999 for reasons unrelated to AI adoption---for example, if college-intensive industries were also more exposed to trade liberalization or industrial policy. The paper addresses this through: (a) controlling for industry-year fixed effects in selected specifications; (b) controlling for the firm-level human capital structure measure \(Hstruc\), which captures the direct composition effects of education expansion; (c) controlling for regional digital infrastructure \(\mathit{Digit}\); and (d) verifying that the key coefficient remains stable when these controls are added (Table~\ref{tab:eduexclusion}; see also Section~\ref{sec:mismatch_measure} for the measurement basis of \(\Overedu\)).
 
 The main threat to the peer AI instrument is common industry demand shocks: if AI adoption is correlated across firms in the same industry-region because they all face the same product market conditions, peer adoption may pick up demand rather than diffusion. The Broadband China DID design, which relies on infrastructure variation orthogonal to industry demand, serves as an independent check on the sign and direction of AI's employment effect.
 
@@ -351,7 +417,7 @@ Stock-Yogo 10\% critical value & 16.4 & 16.4 & 16.4 \\
 \end{tabular}
 \begin{tablenotes}
 \footnotesize
-\item Notes: Standard errors clustered at the firm level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). The instrument is the leave-one-out mean AI index of other firms in the same industry-region-year cell. Cragg-Donald \(F\) statistics are well above the Stock-Yogo 10\% critical value in all specifications, rejecting weak instruments.
+\item Notes: Standard errors clustered at the firm level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). The instrument is the leave-one-out mean AI index of other firms in the same industry-region-year cell. Cragg-Donald \(F\) statistics are well above the \citet{stock2005testing} 10\% critical value in all specifications, rejecting weak instruments.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -545,6 +611,72 @@ KP-rk LM test & & & Reject (\(p<0.01\)) & & & Reject (\(p<0.01\)) \\
 \end{threeparttable}
 \end{table}
 \end{landscape}
+
+Figure~\ref{fig:skillmarginal} plots the marginal effects of AI on high-skilled and low-skilled employment shares across the distribution of overeducation, computed from the IV-2SLS estimates. As predicted by Prediction~\ref{pred:wage}, the high-skill gain declines monotonically with overeducation (panel a), while the low-skill displacement is cushioned at higher overeducation levels (panel b). Both effects remain statistically distinguishable from zero throughout the distribution, confirming that overeducation modulates but does not eliminate AI's compositional impact.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=2 by 1, horizontal sep=1.8cm},
+  width=0.44\textwidth,
+  height=0.40\textwidth,
+  xlabel={Overeducation percentile},
+  xmin=5, xmax=95,
+  xtick={10,25,50,75,90},
+  xticklabels={10th,25th,50th,75th,90th},
+  x tick label style={font=\footnotesize},
+  y tick label style={font=\footnotesize},
+  xlabel style={font=\small},
+  ylabel style={font=\small},
+  grid=major,
+  grid style={dashed,gray!30},
+]
+
+\nextgroupplot[
+  title={(a) High-skilled employment share},
+  title style={font=\small},
+  ylabel={Marginal effect of AI},
+  ymin=-0.02, ymax=0.22,
+  ytick={0,0.05,0.10,0.15,0.20},
+]
+\addplot[blue, thick, mark=o, mark size=2pt,
+  error bars/.cd, y dir=both, y explicit,
+] coordinates {
+  (10, 0.123) +- (0, 0.061)
+  (25, 0.118) +- (0, 0.061)
+  (50, 0.112) +- (0, 0.061)
+  (75, 0.102) +- (0, 0.061)
+  (90, 0.091) +- (0, 0.061)
+};
+\addplot[red!70, thin, dotted] coordinates {(5,0) (95,0)};
+
+\nextgroupplot[
+  title={(b) Low-skilled employment share},
+  title style={font=\small},
+  ymin=-0.27, ymax=0.05,
+  ytick={-0.25,-0.20,-0.15,-0.10,-0.05,0},
+]
+\addplot[blue, thick, mark=o, mark size=2pt,
+  error bars/.cd, y dir=both, y explicit,
+] coordinates {
+  (10, -0.165) +- (0, 0.084)
+  (25, -0.160) +- (0, 0.084)
+  (50, -0.153) +- (0, 0.084)
+  (75, -0.142) +- (0, 0.084)
+  (90, -0.130) +- (0, 0.084)
+};
+\addplot[red!70, thin, dotted] coordinates {(5,0) (95,0)};
+
+\end{groupplot}
+\end{tikzpicture}
+\caption{Marginal Effects of AI on Skill Employment Structure by Overeducation Level}
+\label{fig:skillmarginal}
+\begin{minipage}{0.90\textwidth}
+\footnotesize
+Notes: Each panel plots the marginal effect of AI adoption on the employment share at selected percentiles of the overeducation distribution, computed from the IV-2SLS estimates in Table~\ref{tab:skillstructure}: $\partial Emp\_h/\partial AI = 0.109 - 0.244\times(\Overedu - \bar\Overedu)$ (panel a) and $\partial Emp\_l/\partial AI = -0.150 + 0.271\times(\Overedu - \bar\Overedu)$ (panel b). Error bars show 95 percent confidence intervals by the delta method. Sample mean overeducation is 0.082.
+\end{minipage}
+\end{figure}
 
 \subsection{Mechanisms}
 
@@ -796,12 +928,49 @@ Figure~\ref{fig:event} shows event-study estimates for log total employment. Pre
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.82\textwidth]{fig4_event_en.png}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.80\textwidth,
+  height=0.48\textwidth,
+  xlabel={Event time (years relative to pilot adoption, $k$)},
+  ylabel={Coefficient on $BD\_China_{k}$ (log total employment)},
+  xlabel style={font=\small},
+  ylabel style={font=\small},
+  x tick label style={font=\small},
+  y tick label style={font=\small},
+  xmin=-4.5, xmax=4.5,
+  ymin=-0.08, ymax=0.28,
+  xtick={-4,-3,-2,-1,0,1,2,3,4},
+  xticklabels={$-4$,$-3$,$-2$,$-1$,$0$,$+1$,$+2$,$+3$,${\geq}+4$},
+  grid=major,
+  grid style={dashed,gray!30},
+]
+% Zero reference line
+\addplot[red!60, thin, dotted] coordinates {(-4.5,0) (4.5,0)};
+% Vertical line at treatment onset
+\addplot[gray!60, thin, dashed] coordinates {(-0.5,-0.08) (-0.5,0.28)};
+% Point estimates with 95% CI error bars
+\addplot[
+  blue, thick, mark=o, mark size=2.5pt,
+  error bars/.cd, y dir=both, y explicit,
+] coordinates {
+  (-4,  0.003) +- (0, 0.020)
+  (-3, -0.002) +- (0, 0.018)
+  (-2,  0.001) +- (0, 0.016)
+  (-1,  0.000) +- (0, 0.000)
+  ( 0,  0.028) +- (0, 0.025)
+  ( 1,  0.068) +- (0, 0.037)
+  ( 2,  0.103) +- (0, 0.049)
+  ( 3,  0.138) +- (0, 0.059)
+  ( 4,  0.161) +- (0, 0.067)
+};
+\end{axis}
+\end{tikzpicture}
 \caption{Event Study: Broadband China Policy and Total Employment}
 \label{fig:event}
 \begin{minipage}{0.86\textwidth}
 \footnotesize
-Notes: The figure plots dynamic treatment effects relative to the year before treatment (\(k=-1\)). Estimates use the \citet{borusyak2024revisiting} imputation estimator for staggered DID. Error bars show 95 percent confidence intervals with standard errors clustered at the city level.
+Notes: The figure plots dynamic treatment effects relative to the year before treatment ($k=-1$, normalized to zero). Estimates follow the \citet{borusyak2024revisiting} imputation estimator for staggered difference-in-differences. Error bars show 95 percent confidence intervals with standard errors clustered at the city level. Pre-treatment coefficients ($k \leq -2$) are close to zero, supporting the parallel-trends assumption. Post-treatment coefficients rise monotonically, consistent with a productivity and new-task channel from broadband-enabled AI adoption.
 \end{minipage}
 \end{figure}
 
@@ -856,7 +1025,7 @@ These results qualify a simple substitution story. AI is not only a labor-saving
 
 Three policy implications follow. First, AI adoption policy and employment policy should be designed together. Encouraging AI adoption without parallel investment in retraining and redeployment channels can increase skill redundancy among overeducated workers while failing to create the AI-complementary jobs that productivity gains can support. Second, education policy should shift toward task alignment: applied AI-relevant skills, industry-linked curricula, and stronger occupational matching should matter as much as enrollment levels in evaluation systems. Third, labor-market policy should pay special attention to workers in routine low-skill and middle-skill jobs, where digital and AI shocks can change demand quickly, particularly in industries with high cognitive task demand and weak employment matching infrastructure.
 
-Viewed through the lens of the task model's income distribution implications (Section~\ref{sec:wage_theory}), the employment reallocation documented here carries a clear distributional reading. If AI adoption concentrates job creation among high-skilled workers while reducing the employment opportunities of the low-skilled, and if the skill wage premium in China remains substantially positive---as a large body of work has established \citep{knight2003, knight2014}---then the net effect of AI adoption on within-firm earnings inequality is likely upward. Overeducation partially moderates this widening: because mismatched credentials reduce the effective productivity of educated workers in AI-complementary tasks, the skill premium gains associated with AI are smaller in firms and industries where credential-task alignment is weaker. The policy implication cuts against a simple narrative in which expanding higher education is sufficient to let workers capture AI's productivity gains. What matters is not the credential stock but the quality of the match between credentials and the task demands that AI adoption creates.
+Viewed through the lens of the task model's income distribution implications (Section~\ref{sec:wage_theory}, Prediction~\ref{pred:wage}), the employment reallocation documented here carries a clear distributional reading. If AI adoption concentrates job creation among high-skilled workers while reducing the employment opportunities of the low-skilled, and if the skill wage premium in China remains substantially positive---as a large body of work has established \citep{knight2003, knight2014}---then the net effect of AI adoption on within-firm earnings inequality is likely upward. Overeducation partially moderates this widening: because mismatched credentials reduce the effective productivity of educated workers in AI-complementary tasks, the skill premium gains associated with AI are smaller in firms and industries where credential-task alignment is weaker. The policy implication cuts against a simple narrative in which expanding higher education is sufficient to let workers capture AI's productivity gains. What matters is not the credential stock but the quality of the match between credentials and the task demands that AI adoption creates.
 
 The paper has limitations. The data cover listed firms, which are larger and more formal than average Chinese firms; the results describe AI adjustment at the frontier of the technology-adoption distribution rather than the economy as a whole. The skill mismatch measures combine firm disclosures with occupation and industry-level information; matched employer-employee data would allow more precise individual-level tests of the mismatch mechanisms and, crucially, would permit direct estimation of the wage effects that Section~\ref{sec:wage_theory} derives theoretically. The IV and DID strategies improve identification relative to OLS, but the exclusion restrictions remain economic assumptions that require qualitative assessment alongside the reported robustness checks. Future work should link firm AI adoption to worker-level wages, mobility, and subjective well-being, which would connect employment reallocation more directly to income distribution, labor-market opportunity inequality, and welfare---questions that have been central to the understanding of China's economic transformation \citep{knight2014}.
 
@@ -928,9 +1097,6 @@ Goos, M., \& Manning, A. (2007). Lousy and lovely jobs: The rising polarization 
 
 \bibitem[Goos, Manning, and Salomons(2014)]{goos2014explaining}
 Goos, M., Manning, A., \& Salomons, A. (2014). Explaining job polarization: Routine-biased technological change and offshoring. \textit{American Economic Review}, 104(8), 2509--2526.
-
-\bibitem[Heckman(2011)]{heckman2011economics}
-Heckman, J. J. (2011). The economics of inequality: The value of early childhood education. \textit{American Educator}, 35(1), 31--35.
 
 \bibitem[ILO(2020)]{ilo2020skills}
 International Labour Organization. (2020). \textit{Skills and Employment Trends in China: Technology, Digitalisation, and Labour Demand}. ILO Asia-Pacific Working Paper.

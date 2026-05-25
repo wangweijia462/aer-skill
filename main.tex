@@ -465,7 +465,7 @@ Wald \(F\) & & & Above 10\% critical value \\
 \end{tabular}
 \begin{tablenotes}
 \footnotesize
-\item Notes: Standard errors clustered at the firm level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). The IV specification uses the peer AI instrument for \(AI_{it}\) and the \(Edushock \times AI\) interaction for \(AI_{it} \times \Overedu_{it}\). Adjusted \(R^2\) is not reported for IV-2SLS as it does not have the same interpretation as OLS \(R^2\) \citep{wooldridge2010econometric}. Overeducation is mean-centered before interaction.
+\item Notes: Standard errors clustered at the firm level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). In the IV-2SLS specification, \(\Overedu_{it}\) and \(AI_{it} \times \Overedu_{it}\) are treated as endogenous and instrumented by \(Edushock_{jt}\) and \(AI_{it} \times Edushock_{jt}\), respectively; the main AI term is included as exogenous, with firm and industry fixed effects absorbing time-invariant confounders. This moderated-IV approach identifies the causal overeducation interaction while conditioning on within-firm AI variation. Adjusted \(R^2\) is not reported for IV-2SLS \citep{wooldridge2010econometric}. Overeducation is mean-centered before interaction.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -723,7 +723,7 @@ Observations & 10,563 & 10,563 & 10,563 & 10,563 & 10,563 & 10,563 & 10,563 & 10
 \end{tabular}
 \begin{tablenotes}
 \footnotesize
-\item Notes: \(M\) denotes the mechanism variable in the column heading. Columns (1)--(6) use log total employment as the dependent variable; columns (7)--(8) use low-skilled employment share. All columns report IV-2SLS estimates. Standard errors clustered at the firm level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). Mechanism variables are mean-centered before interaction terms are constructed.
+\item Notes: \(M\) denotes the mechanism variable in the column heading. Columns (1)--(6) use log total employment as the dependent variable; columns (7)--(8) use low-skilled employment share. All columns report IV-2SLS estimates with year fixed effects. Single-moderator columns (1, 3, 5, 7) treat \(AI\) and \(AI \times M\) as endogenous, using leave-one-out peer AI adoption (\(AI^{exself}\)) and its interaction with \(M\) as instruments. Triple-interaction columns (2, 4, 6, 8) additionally treat \(\Overedu\) and \(AI \times \Overedu\) as endogenous and employ a four-instrument set (\(AI^{exself}\), \(Edushock\), \(AI^{exself} \times Edushock\), \(AI^{exself} \times Edushock \times M\)). Standard errors clustered at the firm level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). Mechanism variables are mean-centered before interaction terms are constructed.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -922,7 +922,7 @@ Y_{it}
 \end{aligned}
 \label{eq:did}
 \end{equation}
-City fixed effects \(\rho_c\), industry fixed effects \(\delta_j\), and year fixed effects \(\eta_t\) absorb pre-existing city and industry differences and aggregate trends. Standard errors are clustered at the city level to account for within-city correlation across firms and over time \citep{callaway2021difference}. Treatment is defined as the indicator for firms located in pilot cities after pilot adoption. Because treatment timing varies across cities, the staggered adoption design requires an event-study estimator that allows for heterogeneous treatment effects \citep{borusyak2024revisiting}; the event-study figure is presented as the primary DID evidence.
+City fixed effects \(\rho_c\), industry fixed effects \(\delta_j\), and year fixed effects \(\eta_t\) absorb pre-existing city and industry differences and aggregate trends. Standard errors are clustered at the firm level. Treatment is defined as the indicator for firms located in pilot cities after pilot adoption. Because treatment timing varies across cities, the staggered adoption design requires an event-study estimator that allows for heterogeneous treatment effects \citep{borusyak2024revisiting}; the event-study figure is presented as the primary DID evidence.
 
 Figure~\ref{fig:event} shows event-study estimates for log total employment. Pre-treatment coefficients are close to zero and economically small, supporting the parallel-trends assumption. Post-treatment effects are positive and increasing, consistent with a productivity and new-task channel from broadband-enabled AI adoption.
 
@@ -1008,7 +1008,7 @@ Adjusted \(R^2\) & 0.695 & 0.535 & 0.695 & 0.698 & 0.695 & 0.698 \\
 \end{tabular}
 \begin{tablenotes}
 \footnotesize
-\item Notes: Standard errors clustered at the city level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). Broadband China is an indicator for firms in pilot cities after pilot adoption. Four observations are lost due to missing city identifiers. The DID estimates complement the IV results but identify a different margin of variation.
+\item Notes: Standard errors clustered at the firm level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). Broadband China is an indicator for firms in pilot cities after pilot adoption. Four observations are lost due to missing city identifiers. The DID estimates complement the IV results but identify a different margin of variation.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

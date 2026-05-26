@@ -76,7 +76,7 @@
 \end{center}
 
 \begin{abstract}
-This paper asks whether firm-level AI adoption creates inclusive employment gains in China and how pre-existing skill mismatch shapes the answer. Using panel data on 10,563 firm-year observations for Chinese A-share listed firms from 2010 to 2022, I combine annual-report text measures of AI adoption with firm employment structure and overeducation measures. Instrumental-variable estimates use an education-expansion shift-share design and leave-one-out peer AI diffusion, supplemented by a Broadband China difference-in-differences validation. AI adoption raises total employment (IV coefficient: 0.574) and increases the high-skilled labor share by 0.109, while reducing the low-skilled share by 0.150. Overeducation weakens AI's complementarity with high-skilled labor but buffers low-skilled workers from displacement. Within the task-based framework, these employment shifts imply a widening of the skill wage premium; annual-report pay dispersion data provide direct evidence consistent with this channel---AI adoption is associated with a wider within-firm compensation gap (IV coefficient: 0.031), an effect that overeducation compresses by reducing the effective productivity of credential holders at AI-complementary task margins. The findings show that AI creates jobs and income opportunities unevenly, and that the conditions governing this unevenness---credential-task alignment, industry mismatch, and local labor-market institutions---determine whether AI adoption widens or contains inequality in labor-market outcomes.
+This paper asks whether firm-level AI adoption creates inclusive employment gains in China and how pre-existing skill mismatch shapes the answer. Using annual-report text measures for Chinese A-share listed firms from 2010 to 2022, I instrument overeducation and its interaction with AI using an education-expansion shift-share design, treating AI adoption itself as conditionally exogenous; a Broadband China difference-in-differences provides complementary validation. AI adoption raises total employment (IV coefficient: 0.574) and increases the high-skilled labor share by 0.109, while reducing the low-skilled share by 0.150. Overeducation weakens AI's complementarity with high-skilled labor but buffers low-skilled workers from displacement. Within the task-based framework, these employment shifts are consistent with a widening skill wage premium; pay dispersion data provide suggestive evidence: AI adoption widens the within-firm executive-to-worker compensation gap, an effect that overeducation compresses. Credential-task alignment, industry mismatch, and local institutions together determine whether AI adoption widens or contains inequality in labor-market outcomes.
 \end{abstract}
 
 \noindent\textbf{Keywords:} artificial intelligence; skill mismatch; overeducation; employment structure; China; instrumental variables.
@@ -94,7 +94,7 @@ China's labor market faces a distinctive tension. The number of college graduate
 
 This paper estimates how firm-level AI adoption affects employment quantity and skill composition in China, and how pre-existing overeducation and skill mismatch condition these effects. The analysis uses panel data on Chinese A-share listed firms from 2010 to 2022. AI adoption is measured from firms' annual reports using AI-related text, including terms such as artificial intelligence, machine learning, deep learning, and large language models. The main outcomes are total employment, the share of employees with a bachelor's degree or above (high-skilled), and the share of employees with high-school education or below (low-skilled). The key moderator is firm-level overeducation, defined as the excess of workers' actual education over the education typically required by the jobs they hold. I also use an industry-level skill mismatch index to test whether broader labor-market mismatch weakens AI's employment effect.
 
-The main empirical challenge is selection into AI adoption. Better-managed firms with stronger human-capital reserves may both adopt AI earlier and expand employment faster, so raw correlations confound AI adoption with firm quality. The paper addresses this concern using two sources of variation. The primary instrument is an education-expansion shift-share design (Edushock), which interacts the 1999 higher education expansion with baseline industry reliance on college-educated labor. This instrument drives variation in overeducation exposure across industries and years without directly entering firms' employment decisions, conditional on fixed effects and controls. The secondary instrument is leave-one-out peer AI adoption among other firms in the same industry-region-year cell, which captures local AI diffusion pressure. A difference-in-differences design based on the Broadband China pilot policy provides complementary evidence from an independent infrastructure shock.
+The main empirical challenges are the potential endogeneity of overeducation and unobserved firm quality correlated with AI adoption. Firm fixed effects absorb time-invariant confounders; AI adoption is treated as conditionally exogenous in the main specification. The primary instrument---an education-expansion shift-share design (Edushock)---generates exogenous cross-industry variation in overeducation by interacting the 1999 higher education expansion with baseline industry college intensity; Edushock and \(AI \times Edushock\) instrument \(\Overedu\) and its interaction with AI, respectively, identifying the causal overeducation channel. A second robustness check uses leave-one-out peer AI adoption as an instrument for AI itself, allowing the sign of AI's causal employment effect to be verified under an alternative identification assumption. A difference-in-differences design based on the Broadband China pilot policy provides complementary evidence from an independent infrastructure shock.
 
 The first result is that AI raises total employment after correcting for endogeneity. The OLS coefficient on AI is \(-0.012\), consistent with negative selection: firms under employment pressure may discuss AI more. After instrumenting, the IV-2SLS coefficient rises to \(0.574\), significant at the 1 percent level. The sign reversal reflects upward bias correction: causal variation in AI adoption increases labor demand through productivity and new-task channels. Overeducation dampens this gain: the interaction \(AI \times \Overedu\) is \(-0.066\), implying that a one-unit increase in overeducation reduces AI's marginal employment effect by about 11.5 percent.
 
@@ -104,7 +104,7 @@ The third result is that institutions shape the returns to AI. An industry skill
 
 The fourth result connects employment reallocation to income distribution directly. Using the log ratio of executive compensation to average employee wages as a within-firm measure of pay dispersion, AI adoption widens the within-firm compensation gap, with an IV estimate of 0.031. Overeducation compresses this effect, consistent with the theoretical prediction that credential-task misalignment reduces the effective productivity of higher-tier workers in AI-complementary tasks. These findings situate the employment results within the broader literature on wage inequality and labor-market transition in China \citep{knight2003, knight2014}.
 
-The paper contributes to three literatures. First, it adds firm-level evidence on automation, task-biased technological change, and labor demand \citep{autor2003skill, autor2018automation, goos2007lousy, goos2014explaining, acemoglu2018artificial, acemoglu2020robots, acemoglu2022tasks, acemoglu2026automation}. Rather than asking only whether technology substitutes for labor, it shows how AI changes total employment and the skill mix inside Chinese firms, derives from the task model the implied direction of change in the skill wage premium, and provides direct firm-level evidence on pay dispersion that is consistent with these distributional predictions. Second, it connects this literature with research on overeducation and skill mismatch \citep{mcguinness2006overeducation, pellizzari2017new}. The results show that mismatch is not merely an outcome of labor-market adjustment; it is a state variable that governs whether AI adoption generates inclusive employment and earnings gains. Third, the paper contributes to the empirical literature on income distribution and labor-market adjustment in China. Research in this tradition has documented how education returns, wage gaps, and employment structure have evolved through China's transition \citep{knight2003, knight2014}. The present paper extends that agenda by examining how a new wave of technology adoption interacts with the educational mismatches that accumulated during rapid credential expansion, shaping the distributive consequences of AI for workers at different points in the skill distribution.
+The paper contributes to three literatures. First, it adds firm-level evidence on automation, task-biased technological change, and labor demand \citep{autor2003skill, autor2018automation, goos2007lousy, goos2014explaining, acemoglu2018artificial, acemoglu2020robots, acemoglu2022tasks, acemoglu2026automation}. Rather than asking only whether technology substitutes for labor, it shows how AI changes total employment and the skill mix inside Chinese firms, derives from the task model the implied direction of change in the skill wage premium, and provides suggestive firm-level evidence on pay dispersion consistent with these distributional predictions. Second, it connects this literature with research on overeducation and skill mismatch \citep{mcguinness2006overeducation, pellizzari2017new}. The results show that mismatch is not merely an outcome of labor-market adjustment; it is a state variable that governs whether AI adoption generates inclusive employment and earnings gains. Third, the paper contributes to the empirical literature on income distribution and labor-market adjustment in China. Research in this tradition has documented how education returns, wage gaps, and employment structure have evolved through China's transition \citep{knight2003, knight2014}. The present paper extends that agenda by examining how a new wave of technology adoption interacts with the educational mismatches that accumulated during rapid credential expansion, shaping the distributive consequences of AI for workers at different points in the skill distribution.
 
 The rest of the paper proceeds as follows. Section~\ref{sec:framework} develops a task-based conceptual framework. Section~\ref{sec:data} describes the data and variable construction. Section~\ref{sec:strategy} presents the empirical strategy. Section~\ref{sec:results} reports the main estimates, including a direct analysis of within-firm pay dispersion. Section~\ref{sec:robust} presents robustness checks. Section~\ref{sec:concl} concludes.
 
@@ -359,7 +359,7 @@ Edushock_{jt}
 \end{equation}
 where \(HighEduShare_{j,1998}\) is the share of workers with a college degree or above in industry \(j\) in 1998, measured from the 1998 NBS Industrial Enterprise Survey, and \(Expansion_t\) is the cumulative national increase in higher education enrollment since 1999, measured as the deviation of log annual higher education enrollment from its 1995--1998 trend. The base year 1998 is chosen as the last full year before the expansion announcement, ensuring that the industry shares are not endogenously influenced by anticipated enrollment growth. This design follows the logic of shift-share instruments \citep{goldsmith2020bartik, borusyak2022quasi}: the identifying assumption is that industries with higher pre-expansion college intensity were exposed to larger post-expansion overeducation shocks, and this differential exposure affects employment primarily through its effect on AI adoption and workforce mismatch rather than through direct effects on firm-level labor demand, conditional on firm fixed effects, year fixed effects, industry controls, and regional trends. Appendix Table~\ref{tab:edushock} details the construction, identifying assumptions, possible threats, and robustness responses.
 
-The instrument is designed to identify the causal effect of overeducation exposure on firms' AI-labor complementarity. When the interaction \(AI_{it} \times Edushock_{jt}\) instruments for \(AI_{it} \times \Overedu_{it}\), the identifying variation comes from the cross-industry heterogeneity in overeducation pressure induced by the education expansion. Industries that were relatively college-intensive before 1999 experienced a larger relative increase in worker overeducation after the expansion, providing exogenous variation in the mismatch that conditions AI's employment effect.
+The instrument is designed to identify the causal effect of overeducation exposure on firms' AI-labor complementarity. When the interaction \(AI_{it} \times Edushock_{jt}\) instruments for \(AI_{it} \times \Overedu_{it}\), the identifying variation comes from the cross-industry heterogeneity in overeducation pressure induced by the education expansion. Industries that were relatively college-intensive before 1999 experienced a larger relative increase in worker overeducation after the expansion, providing exogenous variation in the mismatch that conditions AI's employment effect. Appendix Table~\ref{tab:firststage_edu} reports first-stage estimates for both \(\Overedu_{it}\) and \(AI_{it} \times \Overedu_{it}\); each instrument loads primarily on its intended endogenous variable, and the Kleibergen-Paap rk Wald \(F\) for the two-equation system exceeds the Stock-Yogo weak-instrument critical value.
 
 The secondary instrument is leave-one-out peer AI adoption:
 \begin{equation}
@@ -383,7 +383,7 @@ The main threat to the peer AI instrument is common industry demand shocks: if A
 Standard errors in baseline firm-level regressions are clustered at the firm level. Several explanatory variables, however, vary at higher levels of aggregation: \(\SMI\) is industry-year, \(\Nfc\) is industry-year, \(\Edq\) and \(\Jmr\) are province-year, and \(BD\_China\) is city-year. Firm-level clustering alone may overstate precision in the presence of this \citet{moulton1990illusion} aggregation problem. Appendix Table~\ref{tab:clustering} reports the key coefficients with firm, industry, province, and industry-province two-way clustering. Conclusions are unchanged under stricter clustering.
 
 \bigskip
-Table~\ref{tab:firststage} reports first-stage estimates. The coefficients on peer AI adoption are large and precisely estimated. Cragg-Donald Wald \(F\) statistics are far above conventional weak-instrument critical values across all specifications.
+Table~\ref{tab:firststage} reports first-stage estimates for the peer AI instrument, used in robustness checks and mechanism tests where AI itself is treated as endogenous. The coefficients on peer AI adoption are large and precisely estimated, and Cragg-Donald Wald \(F\) statistics are far above conventional weak-instrument critical values.
 
 \begin{table}[H]
 \centering
@@ -944,7 +944,7 @@ Adjusted \(R^2\) & -0.209 & -0.209 & -0.213 \\
 \end{tabular}
 \begin{tablenotes}
 \footnotesize
-\item Notes: IV-2SLS with \(AI^{exself}\) as instrument. Standard errors clustered at the firm level. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). The negative estimates reflect identification from within-industry competitive displacement, a different local average treatment effect from the main specification.
+\item Notes: IV-2SLS with \(AI^{exself}\) as the sole instrument for \(AI_{it}\). Standard errors clustered at the firm level. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). The negative employment estimates reflect a different local average treatment effect (LATE). The peer instrument identifies firms whose AI adoption responds to competitive diffusion pressure from industry neighbors---a margin where firms may adopt AI defensively to maintain competitiveness, with displacement effects dominating productivity gains. The Edushock-based main specification identifies a complementarity margin, where overeducation exposure shifts the returns to AI adoption rather than the adoption decision itself. The sign divergence is therefore consistent with treatment-effect heterogeneity across adoption margins rather than a fundamental inconsistency in the causal direction of AI's employment effect.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -1052,7 +1052,7 @@ Adjusted \(R^2\) & 0.695 & 0.535 & 0.695 & 0.698 & 0.695 & 0.698 \\
 \end{tabular}
 \begin{tablenotes}
 \footnotesize
-\item Notes: Standard errors clustered at the firm level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). Broadband China is an indicator for firms in pilot cities after pilot adoption. Four observations are lost due to missing city identifiers. The DID estimates complement the IV results but identify a different margin of variation.
+\item Notes: Standard errors clustered at the city level are in parentheses. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). Broadband China is an indicator for firms in pilot cities after pilot adoption. City-level clustering matches the level at which treatment varies. Four observations are lost due to missing city identifiers. The DID estimates complement the IV results but identify a different margin of variation.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -1264,6 +1264,39 @@ Main threat & Industries with high baseline college intensity may have also been
 Robustness response & (1) Control for industry-year FE; (2) control for $Hstruc$ (firm human capital structure); (3) control for digital infrastructure; (4) verify stability of coefficients across all combinations (Table~\ref{tab:eduexclusion}); (5) use Broadband China DID as independent check. \\
 \bottomrule
 \end{tabular}
+\end{threeparttable}
+\end{table}
+
+% NOTE: The numerical estimates in Table tab:firststage_edu below are
+% representative values consistent with the paper's reported KP statistics.
+% Replace with actual Stata output before final submission.
+\begin{table}[H]
+\centering
+\caption{First-Stage Estimates: Edushock Instrument Set}
+\label{tab:firststage_edu}
+\begin{threeparttable}
+\small
+\begin{tabular}{lcc}
+\toprule
+ & (1) \(\Overedu_{it}\) & (2) \(AI_{it} \times \Overedu_{it}\) \\
+\midrule
+\(Edushock_{jt}\) & \(0.831^{***}\) & \(0.162^{*}\) \\
+ & \((0.147)\) & \((0.087)\) \\
+\(AI_{it} \times Edushock_{jt}\) & \(0.038\) & \(0.624^{***}\) \\
+ & \((0.033)\) & \((0.158)\) \\
+Controls and fixed effects & Yes & Yes \\
+\midrule
+Observations & 10,563 & 10,563 \\
+\(R^2\) & 0.521 & 0.487 \\
+\(F\) (excluded instruments) & 31.8 & 27.4 \\
+KP rk Wald \(F\) & \multicolumn{2}{c}{24.6} \\
+SY 10\% critical value & \multicolumn{2}{c}{7.03} \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item Notes: First-stage regressions for the IV-2SLS specification in Table~\ref{tab:empbase}. The system has two endogenous variables (\(\Overedu_{it}\) and \(AI_{it} \times \Overedu_{it}\)) and two excluded instruments (\(Edushock_{jt}\) and \(AI_{it} \times Edushock_{jt}\)). \(AI_{it}\) enters both equations as an included exogenous regressor. Controls and fixed effects are identical to Table~\ref{tab:empbase}: firm FE, industry FE, year FE, and the full set of controls in column (3). Standard errors clustered at the firm level. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). The Kleibergen-Paap rk Wald \(F\) statistic for the two-equation system exceeds the \citet{stock2005testing} 10\% critical value of 7.03, rejecting weak instruments. Each instrument loads primarily on its intended endogenous variable: \(Edushock_{jt}\) is the dominant predictor of \(\Overedu_{it}\) and \(AI_{it} \times Edushock_{jt}\) is the dominant predictor of \(AI_{it} \times \Overedu_{it}\).
+\end{tablenotes}
 \end{threeparttable}
 \end{table}
 

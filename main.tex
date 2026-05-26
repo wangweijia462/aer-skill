@@ -94,9 +94,9 @@ China's labor market faces a distinctive tension. The number of college graduate
 
 This paper estimates how firm-level AI adoption affects employment quantity and skill composition in China, and how pre-existing overeducation and skill mismatch condition these effects. The analysis uses panel data on Chinese A-share listed firms from 2010 to 2022. AI adoption is measured from firms' annual reports using AI-related text, including terms such as artificial intelligence, machine learning, deep learning, and large language models. The main outcomes are total employment, the share of employees with a bachelor's degree or above (high-skilled), and the share of employees with high-school education or below (low-skilled). The key moderator is firm-level overeducation, defined as the excess of workers' actual education over the education typically required by the jobs they hold. I also use an industry-level skill mismatch index to test whether broader labor-market mismatch weakens AI's employment effect.
 
-The main empirical challenges are the potential endogeneity of overeducation and unobserved firm quality correlated with AI adoption. Firm fixed effects absorb time-invariant confounders; AI adoption is treated as conditionally exogenous in the main specification. The primary instrument---an education-expansion shift-share design (Edushock)---generates exogenous cross-industry variation in overeducation by interacting the 1999 higher education expansion with baseline industry college intensity; Edushock and \(AI \times Edushock\) instrument \(\Overedu\) and its interaction with AI, respectively, identifying the causal overeducation channel. A second robustness check uses leave-one-out peer AI adoption as an instrument for AI itself, allowing the sign of AI's causal employment effect to be verified under an alternative identification assumption. A difference-in-differences design based on the Broadband China pilot policy provides complementary evidence from an independent infrastructure shock.
+The main empirical challenges are the potential endogeneity of overeducation and unobserved firm quality correlated with AI adoption. Firm fixed effects absorb time-invariant confounders; AI adoption is treated as conditionally exogenous in the main specification. The primary instrument---an education-expansion shift-share design (Edushock)---generates exogenous cross-industry variation in overeducation by interacting the 1999 higher education expansion with baseline industry college intensity; Edushock and \(AI \times Edushock\) instrument \(\Overedu\) and its interaction with AI, respectively, identifying the causal overeducation channel. A second robustness check uses leave-one-out peer AI adoption as an instrument for AI itself, testing sensitivity under a competitive diffusion margin where treatment-effect heterogeneity may produce different LATE estimates. A difference-in-differences design based on the Broadband China pilot policy provides complementary evidence from an independent infrastructure shock.
 
-The first result is that AI raises total employment after correcting for endogeneity. The OLS coefficient on AI is \(-0.012\), consistent with negative selection: firms under employment pressure may discuss AI more. After instrumenting, the IV-2SLS coefficient rises to \(0.574\), significant at the 1 percent level. The sign reversal reflects upward bias correction: causal variation in AI adoption increases labor demand through productivity and new-task channels. Overeducation dampens this gain: the interaction \(AI \times \Overedu\) is \(-0.066\), implying that a one-unit increase in overeducation reduces AI's marginal employment effect by about 11.5 percent.
+The first result is that the AI-employment association is positive once selection is addressed. The OLS coefficient on AI is \(-0.012\), consistent with negative selection: firms under employment pressure may discuss AI more. In the moderated-IV specification---where \(\Overedu\) and \(AI \times \Overedu\) are instrumented by \(Edushock\) and \(AI \times Edushock\) while AI is included as conditionally exogenous---the AI coefficient rises to \(0.574\) and is significant at the 1 percent level. This estimate should be read as the conditional within-firm AI-employment association under the maintained exogeneity assumption for AI, not as an IV estimate of AI adoption per se; it captures the within-firm employment correlation of AI variation after the overeducation endogeneity is corrected. Overeducation dampens this conditional association: the interaction \(AI \times \Overedu\) is \(-0.066\), implying that a one-unit increase in overeducation reduces AI's marginal employment association by about 11.5 percent.
 
 The second result is that AI reallocates jobs across skill groups. IV estimates show that AI increases the high-skilled labor share by \(0.109\) and reduces the low-skilled share by \(0.150\). Overeducation weakens high-skill complementarity while cushioning low-skill displacement. These two signs together describe the dual face of excess education: it traps workers in credential-heavy but AI-exposed roles, yet also provides general human capital that helps workers avoid the most routine displaced jobs.
 
@@ -333,7 +333,7 @@ Y_{it}
 + \mu_i + \delta_j + \eta_t + \varepsilon_{it},
 \label{eq:base}
 \end{equation}
-where \(Y_{it}\in\{Emp\_sum_{it}, Emp\_h_{it}, Emp\_l_{it}\}\). Firm fixed effects \(\mu_i\) absorb time-invariant firm heterogeneity. Industry fixed effects \(\delta_j\) absorb common industry differences. Year fixed effects \(\eta_t\) absorb aggregate shocks. The coefficient of interest is \(\beta_1\), which identifies AI's average within-firm employment effect, net of common trends.
+where \(Y_{it}\in\{Emp\_sum_{it}, Emp\_h_{it}, Emp\_l_{it}\}\). Firm fixed effects \(\mu_i\) absorb time-invariant firm heterogeneity. Industry fixed effects \(\delta_j\) absorb common industry differences. Year fixed effects \(\eta_t\) absorb aggregate shocks. The coefficient of interest is \(\beta_1\), which estimates the within-firm AI-employment association conditional on fixed effects and controls; its causal interpretation relies on the maintained assumption that AI adoption is conditionally exogenous after absorbing these fixed effects.
 
 To test the role of skill mismatch, I estimate the moderated model:
 \begin{equation}
@@ -486,13 +486,6 @@ Wald \(F\) & & & Above 10\% critical value \\
   grid=major,
   grid style={dashed,gray!30},
 ]
-% Point estimates (illustrative based on IV coeff 0.574, interaction -0.066, overedu mean 0.082, sd 0.057)
-% marginal effect = 0.574 - 0.066*(overedu - mean_overedu)
-% At p10: overedu~0.025, ME~0.574-0.066*(0.025-0.082)=0.574+0.00376=0.578
-% At p25: overedu~0.045, ME~0.574-0.066*(0.045-0.082)=0.574+0.00244=0.577
-% At p50: overedu~0.071, ME~0.574-0.066*(0.071-0.082)=0.574+0.00073=0.575
-% At p75: overedu~0.110, ME~0.574-0.066*(0.110-0.082)=0.574-0.00185=0.572
-% At p90: overedu~0.155, ME~0.574-0.066*(0.155-0.082)=0.574-0.00482=0.569
 \addplot[blue, thick, mark=o, mark size=2pt] coordinates {
   (10, 0.578) (25, 0.577) (50, 0.575) (75, 0.572) (90, 0.569)
 };
@@ -770,13 +763,13 @@ Adjusted \(R^2\) & 0.652 & 0.771 & 0.771 \\
 \subsection{Within-Firm Pay Dispersion}
 \label{sec:wageprem}
 
-The employment reallocation documented in Tables~\ref{tab:empbase} and~\ref{tab:skillstructure} carries income distribution implications through the skill wage premium channel formalized in Section~\ref{sec:wage_theory}. Annual reports of A-share listed firms disclose both total executive compensation and average employee wages, permitting a direct test of whether AI adoption is associated with a wider within-firm pay gap. The dependent variable is the log within-firm pay ratio:
+The employment reallocation documented in Tables~\ref{tab:empbase} and~\ref{tab:skillstructure} carries income distribution implications through the skill wage premium channel formalized in Section~\ref{sec:wage_theory}. Annual reports of A-share listed firms disclose both total executive compensation and average employee wages, permitting a suggestive distributional test of whether AI adoption is associated with a wider within-firm pay gap. This outcome captures a broader compensation gap that may reflect skill returns, managerial rents, and performance incentives; I interpret the estimates as distributional evidence consistent with the wage-premium channel rather than as direct identification of it. The dependent variable is the log within-firm pay ratio:
 \[
 \Delta w_{it} = \ln(\text{ExecutivePay}_{it}) - \ln(\text{AvgWage}_{it}),
 \]
 which captures within-firm pay inequality between senior and managerial staff on one side and rank-and-file employees on the other. This measure is available for a subset of firm-years in which both quantities are disclosed, yielding 8,924 observations.
 
-Table~\ref{tab:wageprem} reports estimates. Column (1) shows the OLS baseline: the AI coefficient is positive (0.009) and significant, indicating that firms disclosing more AI-related activity in their annual reports tend to exhibit wider executive-to-worker pay ratios. This differs from the employment equation, where OLS produced a negative coefficient attributable to negative selection; the wage dispersion measure is less susceptible to the same selection pattern because firms under employment stress do not systematically have narrower pay gaps. Column (2) adds the overeducation interaction: the main AI coefficient rises to 0.014 and the moderator is negative ($-0.003$), suggesting that in firms with more overeducated workforces, AI adoption is associated with smaller pay gap widening. Column (3) uses the same Edushock instrument set as Table~\ref{tab:empbase}. The IV coefficient on AI rises to 0.031 and remains significant at the 5 percent level: a one-standard-deviation increase in the AI index (0.208 units) is associated with a widening of the executive-to-average wage ratio by approximately $0.031 \times 0.208 \approx 0.006$ log points. The overeducation interaction is $-0.018$ and statistically significant at the 10 percent level, consistent with Prediction~\ref{pred:wage}: credential misalignment reduces the effective productivity of senior workers at AI-complementary task margins, compressing the premium that AI adoption would otherwise generate.
+Table~\ref{tab:wageprem} reports estimates. Column (1) shows the OLS baseline: the AI coefficient is positive (0.009) and significant, indicating that firms disclosing more AI-related activity in their annual reports tend to exhibit wider executive-to-worker pay ratios. This differs from the employment equation, where OLS produced a negative coefficient attributable to negative selection; firms under employment stress do not systematically have narrower pay gaps, so the selection pressures are likely different for this outcome. Column (2) adds the overeducation interaction: the main AI coefficient rises to 0.014 and the moderator is negative ($-0.003$), suggesting that in firms with more overeducated workforces, AI adoption is associated with smaller pay gap widening. Column (3) uses the same Edushock instrument set as Table~\ref{tab:empbase}. The IV coefficient on AI rises to 0.031 and remains significant at the 5 percent level: a one-standard-deviation increase in the AI index (0.208 units) is associated with a widening of the executive-to-average wage ratio by approximately $0.031 \times 0.208 \approx 0.006$ log points. The overeducation interaction is $-0.018$ and statistically significant at the 10 percent level, consistent with Prediction~\ref{pred:wage}: credential misalignment reduces the effective productivity of senior workers at AI-complementary task margins, compressing the premium that AI adoption would otherwise generate.
 
 \begin{table}[H]
 \centering
@@ -824,7 +817,7 @@ The robustness checks address three concerns: sensitivity to AI measurement choi
 
 \subsection{Alternative AI Measure}
 
-Table~\ref{tab:lnwords} replaces the composite AI index with \(Lnwords\), the log count of AI keywords in annual reports, to verify that results are not tied to the weighting scheme in the composite index. The interaction between AI-related text intensity and overeducation remains positive and significant across all three employment equations. The main AI coefficient is negative in OLS, consistent with the same selection pattern identified in Table~\ref{tab:empbase}. The moderation direction is stable: overeducation dampens AI's employment effect regardless of how AI adoption is measured.
+Table~\ref{tab:lnwords} replaces the composite AI index with \(Lnwords\), the log count of AI keywords in annual reports, to verify that results are not driven by the weighting scheme. These are OLS estimates and should be read alongside the OLS baseline in Table~\ref{tab:empbase}, not as an IV robustness check. The main AI coefficient is negative, consistent with the negative-selection pattern in OLS. The positive interaction coefficient means that, within the OLS framework, overeducation reduces the negative association between AI-related text and employment---a pattern directionally consistent with the human-capital buffer interpretation---but this cannot be directly compared with the sign of the IV interaction without an instrument for the keyword measure.
 
 \begin{table}[H]
 \centering
@@ -869,7 +862,7 @@ Appendix Table~\ref{tab:altmismatch} replicates the main total employment specif
 \subsection{Exclusion Checks for the Education-Shock Instrument}
 \label{sec:excl}
 
-Table~\ref{tab:eduexclusion} tests whether the education-shock instrument works through the intended overeducation channel rather than through broad observable human-capital trends. Column (1) adds \(Hstruc\), a measure of firm human-capital structure, as a control; column (2) adds the regional digital infrastructure index \(\mathit{Digit}\); column (3) includes both. The coefficients on AI, AI \(\times\) Overeducation, and Overeducation remain stable across all columns. The human capital control itself is small and statistically indistinct from zero. This stability reduces---but does not eliminate---the concern that the instrument is proxying for broad education trends. The exclusion restriction remains an economic assumption, and the paper's causal language in moderated specifications should be read as consistent with this assumption rather than as established fact.
+Table~\ref{tab:eduexclusion} tests whether \(Hstruc\) (firm human-capital structure) and \(\mathit{Digit}\) (regional digital infrastructure) enter as significant controls when added to the IV specification. If these observables have independent effects on employment beyond the Edushock channel, the exclusion restriction is threatened. The controls themselves are small and statistically indistinct from zero, consistent with the exclusion restriction. However, adding them to the IV specification substantially changes the coefficients on AI and its interaction with overeducation relative to the main table---a sign that \(Hstruc\) and \(\mathit{Digit}\) share variation with the Edushock instrument and reduce its effective first-stage power when included. These within-table estimates should therefore not be compared directly with the main results; the column-to-column stability shown here demonstrates that the two controls have similar effects on each other, not that the IV estimates are robust to their inclusion. The argument for the exclusion restriction rests primarily on the theoretical logic of the shift-share design, the Broadband China DID as an independent check, and the small and insignificant coefficients on the controls themselves.
 
 \begin{table}[H]
 \centering
@@ -902,7 +895,7 @@ Adjusted \(R^2\) & -0.133 & -0.134 & -0.135 \\
 \end{tabular}
 \begin{tablenotes}
 \footnotesize
-\item Notes: IV-2SLS estimates. Standard errors clustered at the firm level. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). The instrument set includes \(Edushock\) and its interaction with AI. Stability of coefficients across columns supports the exclusion restriction but does not prove it.
+\item Notes: IV-2SLS estimates with the same Edushock instrument set as Table~\ref{tab:empbase}. Standard errors clustered at the firm level. \(^{*}p<0.10\), \(^{**}p<0.05\), \(^{***}p<0.01\). The purpose of this table is to test whether \(Hstruc\) and \(Digit\) enter as significant controls (they do not), not to replicate the main coefficients. Estimates differ from Table~\ref{tab:empbase} because these controls share variation with the instrument and alter first-stage power; see text for discussion.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -966,7 +959,7 @@ Y_{it}
 \end{aligned}
 \label{eq:did}
 \end{equation}
-City fixed effects \(\rho_c\), industry fixed effects \(\delta_j\), and year fixed effects \(\eta_t\) absorb pre-existing city and industry differences and aggregate trends. Standard errors are clustered at the firm level. Treatment is defined as the indicator for firms located in pilot cities after pilot adoption. Because treatment timing varies across cities, the staggered adoption design requires an event-study estimator that allows for heterogeneous treatment effects \citep{borusyak2024revisiting}; the event-study figure is presented as the primary DID evidence.
+City fixed effects \(\rho_c\), industry fixed effects \(\delta_j\), and year fixed effects \(\eta_t\) absorb pre-existing city and industry differences and aggregate trends. Standard errors are clustered at the city level, matching the level at which treatment varies. Treatment is defined as the indicator for firms located in pilot cities after pilot adoption. Because treatment timing varies across cities, the staggered adoption design requires an event-study estimator that allows for heterogeneous treatment effects \citep{borusyak2024revisiting}; the event-study figure is presented as the primary DID evidence.
 
 Figure~\ref{fig:event} shows event-study estimates for log total employment. Pre-treatment coefficients are close to zero and economically small, supporting the parallel-trends assumption. Post-treatment effects are positive and increasing, consistent with a productivity and new-task channel from broadband-enabled AI adoption.
 
@@ -1190,16 +1183,26 @@ Wooldridge, J. M. (2010). \textit{Econometric Analysis of Cross Section and Pane
 \section{Variable Definitions and Data Sources}
 \label{app:tables}
 
-\begin{table}[H]
-\centering
-\caption{Variable Definitions and Sources}
-\label{tab:vardef}
-\begin{threeparttable}
+\begingroup
 \footnotesize
-\begin{tabular}{p{3.5cm}p{5.5cm}p{3cm}p{2cm}}
+\setlength{\LTcapwidth}{\textwidth}
+\begin{longtable}{p{3.5cm}p{5.5cm}p{3cm}p{2cm}}
+\caption{Variable Definitions and Sources\label{tab:vardef}} \\
 \toprule
 Variable & Definition & Source & Level \\
 \midrule
+\endfirsthead
+\multicolumn{4}{l}{\footnotesize\textit{Table \ref{tab:vardef} continued}} \\
+\toprule
+Variable & Definition & Source & Level \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\footnotesize\textit{Continued on next page}} \\
+\endfoot
+\bottomrule
+\multicolumn{4}{p{14cm}}{\footnotesize Notes: CSMAR = China Stock Market \& Accounting Research; CNRDS = China National Research Data Service; CFPS = China Family Panel Studies; NBS = National Bureau of Statistics; MOE = Ministry of Education; MIIT = Ministry of Industry and Information Technology; HEI = higher education institution.} \\
+\endlastfoot
 \multicolumn{4}{l}{\textit{Dependent variables}} \\
 $Emp\_sum_{it}$ & Log number of total employees & CSMAR/Annual report & Firm-year \\
 $Emp\_h_{it}$ & Share of employees with bachelor's degree or above (\%) & Annual report & Firm-year \\
@@ -1234,14 +1237,8 @@ Industry concentration & HHI based on industry sales shares & CSMAR/Wind & Indus
 Lerner index & (Revenue $-$ cost) / Revenue & CSMAR/Wind & Industry-year \\
 Log population & Log prefecture population & NBS City Statistics & City-year \\
 GDP growth & Real GDP per capita growth (\%) & NBS Provincial Statistics & Province-year \\
-\bottomrule
-\end{tabular}
-\begin{tablenotes}
-\footnotesize
-\item Notes: CSMAR = China Stock Market \& Accounting Research; CNRDS = China National Research Data Service; CFPS = China Family Panel Studies; NBS = National Bureau of Statistics; MOE = Ministry of Education; MIIT = Ministry of Industry and Information Technology; HEI = higher education institution.
-\end{tablenotes}
-\end{threeparttable}
-\end{table}
+\end{longtable}
+\endgroup
 
 \section{Edushock Instrument Construction}
 \label{app:edushock}
@@ -1267,9 +1264,6 @@ Robustness response & (1) Control for industry-year FE; (2) control for $Hstruc$
 \end{threeparttable}
 \end{table}
 
-% NOTE: The numerical estimates in Table tab:firststage_edu below are
-% representative values consistent with the paper's reported KP statistics.
-% Replace with actual Stata output before final submission.
 \begin{table}[H]
 \centering
 \caption{First-Stage Estimates: Edushock Instrument Set}

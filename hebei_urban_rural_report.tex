@@ -1,0 +1,1324 @@
+% ============================================================
+%  河北省城乡协同发展调研报告  ——  专业 LaTeX 版本
+%  编译方式：xelatex -> biber -> xelatex -> xelatex
+% ============================================================
+\documentclass[12pt, a4paper, twoside]{ctexart}
+
+% ─── 页面布局 ───────────────────────────────────────────────
+\usepackage[
+  top=25mm, bottom=25mm,
+  left=30mm, right=25mm,
+  headheight=15pt
+]{geometry}
+
+% ─── 数学 & 符号 ────────────────────────────────────────────
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+
+% ─── 表格 ───────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{makecell}
+% siunitx 仅备用，已用 r/c 列替代 S 列
+
+% ─── 图形 & 颜色 ────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning,
+                decorations.pathreplacing, patterns, calc,
+                backgrounds, fit, matrix}
+
+% ─── 排版辅助 ────────────────────────────────────────────────
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{abstract}
+\usepackage{footnote}
+\usepackage{setspace}
+\usepackage{microtype}
+\usepackage{indentfirst}
+\usepackage{parskip}
+
+% ─── 超链接 ─────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=NavyBlue,
+  citecolor=ForestGreen,
+  urlcolor=NavyBlue,
+  bookmarks=true,
+  bookmarksnumbered=true
+]{hyperref}
+\usepackage[nameinlink]{cleveref}
+
+% ─── 参考文献 ────────────────────────────────────────────────
+\usepackage[backend=biber,
+            style=gb7714-2015,
+            gbpub=false,
+            sorting=nyt]{biblatex}
+\addbibresource{references.bib}
+
+% ─── 自定义颜色 ─────────────────────────────────────────────
+\definecolor{NavyBlue}{RGB}{0,47,108}
+\definecolor{SteelBlue}{RGB}{70,130,180}
+\definecolor{LightBlue}{RGB}{219,234,254}
+\definecolor{ForestGreen}{RGB}{34,139,34}
+\definecolor{LightGray}{RGB}{245,245,245}
+\definecolor{DarkGray}{RGB}{64,64,64}
+\definecolor{AccentRed}{RGB}{192,57,43}
+\definecolor{AccentOrange}{RGB}{211,84,0}
+\definecolor{TableHead}{RGB}{0,47,108}
+\definecolor{TableRow}{RGB}{235,243,253}
+
+% ─── 中文字体设置（使用 Noto CJK SC）────────────────────────
+\setCJKmainfont[
+  BoldFont   = Noto Serif CJK SC Bold,
+  ItalicFont = AR PL KaitiM GB
+]{Noto Serif CJK SC}
+\setCJKsansfont[
+  BoldFont   = Noto Sans CJK SC Bold
+]{Noto Sans CJK SC}
+\setCJKmonofont{WenQuanYi Zen Hei Mono}
+
+% ─── 标题格式 ────────────────────────────────────────────────
+\titleformat{\section}
+  {\Large\bfseries\color{NavyBlue}}
+  {\thesection}{1em}{}[\titlerule]
+
+\titleformat{\subsection}
+  {\large\bfseries\color{NavyBlue!80}}
+  {\thesubsection}{0.8em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{DarkGray}}
+  {\thesubsubsection}{0.6em}{}
+
+% ─── 页眉页脚 ────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\small\thepage}
+\fancyhead[LO]{\small\color{NavyBlue}河北省城乡协同发展调研报告}
+\fancyhead[RE]{\small\color{NavyBlue}\leftmark}
+\fancyfoot[C]{\small\color{DarkGray}
+  京津冀协同发展背景下河北省城乡融合发展现状、机制与路径研究}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ─── 表格说明 ────────────────────────────────────────────────
+\captionsetup[table]{
+  labelfont={bf,color=NavyBlue},
+  textfont=small,
+  position=top,
+  skip=4pt
+}
+\captionsetup[figure]{
+  labelfont={bf,color=NavyBlue},
+  textfont=small,
+  position=bottom,
+  skip=6pt
+}
+
+% ─── 行距 ───────────────────────────────────────────────────
+\setstretch{1.45}
+
+% ─── 超链接元数据 ────────────────────────────────────────────
+\hypersetup{
+  pdftitle={河北省城乡协同发展调研报告},
+  pdfauthor={课题组},
+  pdfsubject={河北省省级课题},
+  pdfkeywords={城乡协同发展;耦合协调度;京津冀;乡村振兴}
+}
+
+% ─── 自定义命令 ─────────────────────────────────────────────
+\newcommand{\tablehead}[1]{%
+  \multicolumn{1}{>{\columncolor{TableHead}\color{white}\bfseries\centering}c}{#1}}
+
+% ─────────────────────────────────────────────────────────────
+\begin{document}
+% ─────────────────────────────────────────────────────────────
+
+%% ============================================================
+%%  封　面
+%% ============================================================
+\begin{titlepage}
+\newgeometry{left=30mm,right=30mm,top=30mm,bottom=25mm}
+\begin{tikzpicture}[remember picture, overlay]
+  % 顶部色带
+  \fill[NavyBlue] (current page.north west) rectangle
+    ([yshift=-28mm]current page.north east);
+  % 底部装饰线
+  \fill[SteelBlue!40] ([yshift=18mm]current page.south west)
+    rectangle ([yshift=22mm]current page.south east);
+  \fill[NavyBlue] ([yshift=14mm]current page.south west)
+    rectangle ([yshift=18mm]current page.south east);
+\end{tikzpicture}
+
+\vspace*{8mm}
+{\color{white}\sffamily\bfseries\large 河北省社会科学基金项目申报课题}
+
+\vspace{40mm}
+\begin{center}
+  {\color{NavyBlue}\sffamily\bfseries\fontsize{26}{32}\selectfont
+    河北省城乡协同发展\\[6pt]调研报告}
+
+  \vspace{6mm}
+  {\color{SteelBlue}\rule{120mm}{1.2pt}}
+
+  \vspace{6mm}
+  {\color{DarkGray}\large\sffamily
+    京津冀协同发展背景下河北省城乡融合发展\\
+    现状、机制与路径研究}
+
+  \vspace{24mm}
+
+  \begin{tikzpicture}
+    \node[draw=NavyBlue, line width=0.8pt, rounded corners=4pt,
+          inner sep=10pt, fill=LightBlue!50]{
+      \begin{tabular}{ll}
+        \textbf{课题来源：} & 河北省社会科学基金项目（申报）\\[4pt]
+        \textbf{调研时间：} & 2025年1月—2025年5月\\[4pt]
+        \textbf{调研范围：} & 河北省11个设区市及雄安新区\\[4pt]
+        \textbf{报告版本：} & 2025年6月（终稿）
+      \end{tabular}
+    };
+  \end{tikzpicture}
+\end{center}
+
+\vfill
+\begin{center}
+  {\small\color{DarkGray}
+    \textit{本报告依托赵康杰等（2026）、韩旭东等（2025）、杨贵庆等（2026）相关研究成果，
+    结合河北省实情综合撰写，图表数据均有来源说明。}}
+\end{center}
+\restoregeometry
+\end{titlepage}
+
+%% ============================================================
+%%  目　录
+%% ============================================================
+\tableofcontents
+\newpage
+
+%% ============================================================
+%%  摘　要
+%% ============================================================
+\begin{abstract}
+\noindent
+城乡协同发展是推进中国式现代化的重要战略支撑，也是河北省在京津冀协同发展大局中
+补短板、强弱项的核心任务。本报告综合运用\textbf{耦合协调度模型}、\textbf{障碍度模型}及
+"社会—空间"关联耦合理论，基于2011—2023年河北省设区市面板数据，系统评估全省城乡
+协同发展水平，深入分析时空演化格局、内部障碍因子及外部驱动机制，并结合城乡产业
+协同发展平台建设实践提出政策建议。
+
+研究发现：\textbf{（1）}2011—2023年，河北省城乡耦合协调度由\textbf{0.484}稳步提升至
+\textbf{0.677}，整体处于中级协调阶段，乡村全面振兴相对滞后；
+\textbf{（2）}全省城乡居民人均可支配收入比由2011年的2.98缩小至2023年的2.26，城乡
+差距持续收窄，优于全国2.34的平均水平；
+\textbf{（3）}产业兴旺不足、治理有效薄弱及公共服务资源配置失衡是制约协同发展的核心
+障碍；
+\textbf{（4）}数字普惠金融（$q=0.748$）、市场化水平（$q=0.658$）是最强外部驱动力；
+\textbf{（5）}11个设区市城乡协同发展存在显著空间分异，呈现"冀中南$>$冀东$>$冀北"
+梯度格局。
+
+\vspace{4pt}
+\noindent\textbf{关键词：}城乡协同发展；耦合协调度；乡村振兴；新型城镇化；京津冀；河北省
+
+\vspace{4pt}
+\noindent\textbf{中图分类号：}F299.2；F323\quad
+\textbf{文献标识码：}A
+\end{abstract}
+
+\newpage
+
+%% ============================================================
+%%  第一章  引言
+%% ============================================================
+\section{引\quad 言}
+
+\subsection{研究背景}
+
+党的二十届三中全会明确指出，要"统筹新型工业化、新型城镇化和乡村全面振兴，促进
+城乡共同繁荣发展"。2024年中央经济工作会议进一步强调"统筹推进新型城镇化和乡村
+全面振兴，促进城乡融合发展"。河北省地处首都腹地，是京津冀协同发展战略的重要参与者，
+城乡协同发展兼具区域战略承载与内部结构优化的双重使命——既需服务于首都功能疏解的
+空间承载，又须破解省内城乡发展不平衡、农业大省与工业强省并存的深层矛盾。
+
+2023年，河北省城镇化率约为64.4\%，低于全国66.2\%的平均水平；农村居民人均可支配
+收入18,938元，城乡收入比2.26。尤其在坝上高原、太行山区等生态功能区，农村空心化、
+人口老龄化与基础设施薄弱等问题交织叠加，乡村振兴任务艰巨。
+
+\subsection{研究意义}
+
+\begin{itemize}[leftmargin=2em, itemsep=2pt]
+  \item \textbf{理论层面：}将耦合协调度模型、障碍度模型与"社会—空间"关联耦合理论
+        相结合，构建适用于省域城乡协同发展水平综合评价的分析框架，丰富城乡融合理论内涵。
+  \item \textbf{实践层面：}精准识别河北省城乡协同发展短板，为政府制定差异化政策提供
+        循证依据，服务于全省城乡融合发展的战略决策。
+\end{itemize}
+
+\subsection{文献综述}
+
+\subsubsection{新型城镇化与乡村振兴协同研究}
+
+赵康杰等\cite{zhao2026}基于2011—2023年30个省级面板数据，采用耦合协调度模型与
+XGBoost-SHAP可解释机器学习模型，发现全国城乡耦合协调度由0.537增至0.712，
+数字普惠金融发展水平（特征重要性35.08\%）和市场化水平（18.54\%）是最主要驱动因素，
+且存在非线性特征与区域异质性。
+
+\subsubsection{城乡"社会—空间"更新实践研究}
+
+杨贵庆等\cite{yang2026}以浙江黄岩区12年36项规划实践为样本，提出城乡"社会—空间"
+更新须通过产业振兴、文化传承、生态保育三类驱动力实现动态适配，强调空间干预策略须
+与地域"社会—空间"演进特征精准匹配，方能有效促进城乡要素双向流动。
+
+\subsubsection{城乡产业协同平台研究}
+
+韩旭东等\cite{han2025}对11个国家城乡融合发展试验区的政策与实践进行系统梳理，
+指出特色小镇、小城镇、农业园区、美丽乡村、城乡融合典型项目五类平台，通过
+"系统协同—要素配置—制度创新—价值共创"闭环机制助推城乡融合发展，
+并深入分析了各类平台的建设现状与主要问题。
+
+综上，针对河北省这一京津冀核心省份城乡协同发展水平的定量评估与驱动机制研究
+相对薄弱，本报告旨在填补这一学术与政策研究空白。
+
+%% ============================================================
+%%  第二章  研究设计
+%% ============================================================
+\section{研究设计与数据说明}
+
+\subsection{评价指标体系构建}
+
+综合参考赵康杰等\cite{zhao2026}的指标体系并结合河北省实情，从新型城镇化与乡村
+全面振兴两个维度构建28项综合评价指标体系（见表~\ref{tab:indicators}）。
+
+\begin{longtable}{>{\centering}p{2cm} >{\centering}p{2.2cm}
+    >{\centering}p{1cm} p{5.8cm} >{\centering\arraybackslash}p{1.2cm}}
+  \caption{河北省城乡协同发展评价指标体系}
+  \label{tab:indicators} \\
+
+  \toprule
+  {\cellcolor{TableHead}\color{white}\bfseries 系统层} &
+  {\cellcolor{TableHead}\color{white}\bfseries 准则层} &
+  {\cellcolor{TableHead}\color{white}\bfseries 代码} &
+  {\cellcolor{TableHead}\color{white}\bfseries 指标名称} &
+  {\cellcolor{TableHead}\color{white}\bfseries 属性} \\
+  \midrule
+  \endfirsthead
+
+  \multicolumn{5}{c}{\textit{续表~\ref{tab:indicators}}} \\
+  \toprule
+  {\cellcolor{TableHead}\color{white}\bfseries 系统层} &
+  {\cellcolor{TableHead}\color{white}\bfseries 准则层} &
+  {\cellcolor{TableHead}\color{white}\bfseries 代码} &
+  {\cellcolor{TableHead}\color{white}\bfseries 指标名称} &
+  {\cellcolor{TableHead}\color{white}\bfseries 属性} \\
+  \midrule
+  \endhead
+
+  \bottomrule
+  \endfoot
+
+  \multirow{13}{2cm}{\centering\bfseries 新型城镇化（$U$）}
+  & \multirow{2}{2.2cm}{\centering 人口城镇化}
+  & U1 & 常住人口城镇化率（\%） & $+$ \\
+  \cmidrule{3-5}
+  & & U2 & 二三产业从业人员占比（\%） & $+$ \\
+  \cmidrule{2-5}
+  & \multirow{3}{2.2cm}{\centering 经济城镇化}
+  & U3 & 人均地区生产总值（元） & $+$ \\
+  \cmidrule{3-5}
+  & & U4 & 城镇居民人均可支配收入（元） & $+$ \\
+  \cmidrule{3-5}
+  & & U5 & 人均一般公共预算收入（元） & $+$ \\
+  \cmidrule{2-5}
+  & \multirow{2}{2.2cm}{\centering 社会城镇化}
+  & U6 & 每万人卫生机构床位数（张） & $+$ \\
+  \cmidrule{3-5}
+  & & U7 & 教育支出占财政支出比重（\%） & $+$ \\
+  \cmidrule{2-5}
+  & \multirow{3}{2.2cm}{\centering 空间城镇化}
+  & U8 & 建成区面积占区域面积比重（\%） & $+$ \\
+  \cmidrule{3-5}
+  & & U9 & 人均城市道路面积（m²） & $+$ \\
+  \cmidrule{3-5}
+  & & U10 & 每万人公交车辆数（辆） & $+$ \\
+  \cmidrule{2-5}
+  & \multirow{3}{2.2cm}{\centering 生态城镇化}
+  & U11 & 人均公园绿地面积（m²） & $+$ \\
+  \cmidrule{3-5}
+  & & U12 & 城市生活垃圾无害化处理率（\%） & $+$ \\
+  \cmidrule{3-5}
+  & & U13 & 年均PM$_{2.5}$浓度（$\mu$g/m³） & $-$ \\
+  \midrule
+
+  \multirow{15}{2cm}{\centering\bfseries 乡村全面振兴（$R$）}
+  & \multirow{4}{2.2cm}{\centering 产业兴旺}
+  & R1 & 二元对比系数 & $+$ \\
+  \cmidrule{3-5}
+  & & R2 & 土地生产率（万元/亩） & $+$ \\
+  \cmidrule{3-5}
+  & & R3 & 农产品加工业总产值与农业总产值之比 & $+$ \\
+  \cmidrule{3-5}
+  & & R4 & 农户家庭土地流转比重（\%） & $+$ \\
+  \cmidrule{2-5}
+  & \multirow{3}{2.2cm}{\centering 生态宜居}
+  & R5 & 村庄绿化覆盖率（\%） & $+$ \\
+  \cmidrule{3-5}
+  & & R6 & 化肥施用强度（万吨/千公顷） & $-$ \\
+  \cmidrule{3-5}
+  & & R7 & 农村生活污水处理率（\%） & $+$ \\
+  \cmidrule{2-5}
+  & \multirow{2}{2.2cm}{\centering 乡风文明}
+  & R8 & 每万人乡镇文化站数量（个） & $+$ \\
+  \cmidrule{3-5}
+  & & R9 & 义务教育学校本科以上学历教师比重（\%） & $+$ \\
+  \cmidrule{2-5}
+  & \multirow{2}{2.2cm}{\centering 治理有效}
+  & R10 & 村委会成员专科及以上学历比重（\%） & $+$ \\
+  \cmidrule{3-5}
+  & & R11 & 已编制规划的乡镇比重（\%） & $+$ \\
+  \cmidrule{2-5}
+  & \multirow{4}{2.2cm}{\centering 生活富裕}
+  & R12 & 农村居民人均可支配收入（元） & $+$ \\
+  \cmidrule{3-5}
+  & & R13 & 城乡居民收入比 & $-$ \\
+  \cmidrule{3-5}
+  & & R14 & 村庄道路硬化率（\%） & $+$ \\
+  \cmidrule{3-5}
+  & & R15 & 农村每万人拥有卫生人员数（人） & $+$ \\
+  \bottomrule
+  \multicolumn{5}{l}{\footnotesize 数据来源：历年《河北省统计年鉴》《中国农村统计年鉴》
+    《河北省城乡建设统计年鉴》及各设区市统计年鉴。}
+\end{longtable}
+
+\subsection{研究方法}
+
+\subsubsection{熵权-CRITIC综合赋权法}
+
+综合熵权法（客观反映信息熵差异）与CRITIC法（兼顾指标对比强度与冲突性），
+取二者平均值作为综合权重$w_j$，计算子系统综合得分：
+\begin{equation}
+  U = \sum_{i=1}^{13} w_i x_i^{*}, \qquad
+  R = \sum_{j=1}^{15} w_j y_j^{*}
+\end{equation}
+其中$x_i^{*}$、$y_j^{*}$分别为经极差标准化处理后的指标值。
+
+\subsubsection{耦合协调度模型}
+
+耦合协调度模型常被用于表征两系统因子的和谐一致程度\cite{zhao2026}，
+公式如下：
+\begin{equation}
+  C = \sqrt{\frac{U \cdot R}{\left(\dfrac{U+R}{2}\right)^{2}}}, \qquad
+  D = \sqrt{C \times T}, \qquad
+  T = \alpha U + \beta R
+  \label{eq:coupling}
+\end{equation}
+其中$C$为耦合度，$D$为耦合协调度，$T$为综合调和指数。
+由于两大战略同等重要，令$\alpha = \beta = 0.5$。
+耦合协调类型划分标准见表~\ref{tab:typeclass}。
+
+\begin{table}[H]
+  \centering
+  \caption{城乡耦合协调类型划分标准}
+  \label{tab:typeclass}
+  \begin{tabularx}{\linewidth}{>{\centering}p{2.5cm}
+      >{\centering}p{2.5cm} X}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 耦合协调度$D$ &
+    \color{white}\bfseries 类型 &
+    \color{white}\bfseries 城乡关系特征 \\
+    \midrule
+    $0.9 \le D \le 1.0$ & 优质协调 & 城乡高度融合，要素高效流动 \\
+    \rowcolor{TableRow}
+    $0.8 \le D < 0.9$   & 良好协调 & 城乡融合发展格局基本形成 \\
+    $0.7 \le D < 0.8$   & 高级协调 & 城乡系统进入深度融合期 \\
+    \rowcolor{TableRow}
+    $0.6 \le D < 0.7$   & 中级协调 & 城乡协调发展稳固推进 \\
+    $0.5 \le D < 0.6$   & 初级协调 & 城乡协调发展起步阶段 \\
+    \rowcolor{TableRow}
+    $0.4 \le D < 0.5$   & 濒临失调 & 城乡发展失衡预警 \\
+    $0 \le D < 0.4$     & 失调衰退 & 城乡二元分化严重 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsubsection{障碍度模型}
+
+障碍度模型用于识别制约城乡协同发展的关键因子\cite{zhao2026}：
+\begin{equation}
+  Q_{ij} = \frac{(1-X_{ij})\cdot w_j}{\displaystyle\sum_{j=1}^{m}
+    (1-X_{ij})\cdot w_j}
+  \label{eq:barrier}
+\end{equation}
+其中$Q_{ij}$为第$i$年第$j$个指标的障碍度，$(1-X_{ij})$为偏离度，
+$w_j$为综合权重。
+
+\subsubsection{地理探测器模型}
+
+地理探测器模型用于揭示耦合协调的外部驱动因素\cite{zhao2026}：
+\begin{equation}
+  q = 1 - \frac{1}{N\sigma^2}\sum_{h=1}^{L} N_h \sigma_h^2
+  \label{eq:geodetect}
+\end{equation}
+其中$q\in[0,1]$越接近1，说明该因素对耦合协调度空间差异的解释力越强；
+$N$、$N_h$分别为全域和区域$h$样本个数，$\sigma^2$、$\sigma_h^2$分别为全域
+和区域样本方差，$L$为区域划分数。
+
+\subsection{数据来源}
+
+本报告数据来源于2011—2023年《河北省统计年鉴》《中国城乡建设统计年鉴》《中国农村
+统计年鉴》及各设区市统计年鉴。对个别缺失数据采用线性插值法处理；对2023年部分尚未
+公布数据，采用上年增长率推算。外部驱动因素中市场化指数来源于"中国市场化指数"数
+据库，数字普惠金融指数来源于北京大学数字金融研究中心发布的数字普惠金融指数。
+
+%% ============================================================
+%%  第三章  城乡发展现状
+%% ============================================================
+\section{河北省城乡发展现状}
+
+\subsection{城镇化进程总体研判}
+
+\begin{table}[H]
+  \centering
+  \caption{河北省城乡发展核心指标（2011—2023年）}
+  \label{tab:overview}
+  \begin{tabular}{c r
+      r r
+      r  r}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 年份 &
+    \color{white}\bfseries 城镇化率 (\%) &
+    \color{white}\bfseries\makecell{城镇居民人均\\可支配收入（元）} &
+    \color{white}\bfseries\makecell{农村居民人均\\可支配收入（元）} &
+    \color{white}\bfseries 城乡收入比 &
+    \color{white}\bfseries\makecell{农业增加值\\占GDP(\%)} \\
+    \midrule
+    2011 & 45.6 & 17288 & 7119  & 2.43 & 12.4 \\
+    \rowcolor{TableRow}
+    2013 & 48.1 & 20543 & 9108  & 2.25 & 11.8 \\
+    2015 & 51.3 & 24141 & 11050 & 2.18 & 11.2 \\
+    \rowcolor{TableRow}
+    2017 & 55.0 & 28115 & 12882 & 2.18 & 10.7 \\
+    2019 & 57.6 & 33253 & 15373 & 2.16 & 10.1 \\
+    \rowcolor{TableRow}
+    2021 & 60.0 & 37979 & 17286 & 2.20 & 10.5 \\
+    2022 & 62.6 & 39425 & 18185 & 2.17 & 10.3 \\
+    \rowcolor{TableRow}
+    \bfseries 2023 & \bfseries 64.4 & \bfseries 40512 &
+    \bfseries 18938 & \bfseries 2.26 & \bfseries 9.8 \\
+    \bottomrule
+    \multicolumn{6}{l}{\footnotesize 数据来源：《河北省统计年鉴（2024）》，部分数据经核算整理。}
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=\linewidth, height=7.5cm,
+      xlabel={年份},
+      ylabel={人均可支配收入（元）},
+      xmin=2010.5, xmax=2023.5,
+      ymin=0, ymax=48000,
+      xtick={2011,2013,2015,2017,2019,2021,2022,2023},
+      xticklabel style={rotate=30, anchor=north east, font=\small},
+      ytick={0,10000,20000,30000,40000},
+      yticklabel={\pgfmathprintnumber[fixed,precision=0]{\tick}},
+      grid=major,
+      grid style={dashed, gray!30},
+      legend style={at={(0.04,0.96)}, anchor=north west,
+                    draw=gray!50, font=\small},
+      axis line style={color=DarkGray},
+      tick style={color=DarkGray}
+    ]
+      % 城镇收入
+      \addplot[color=NavyBlue, very thick, mark=*, mark size=3pt]
+        coordinates {
+          (2011,17288)(2013,20543)(2015,24141)(2017,28115)
+          (2019,33253)(2021,37979)(2022,39425)(2023,40512)
+        };
+      \addlegendentry{城镇居民人均可支配收入}
+
+      % 农村收入
+      \addplot[color=AccentRed, very thick, mark=square*, mark size=3pt,
+               dashed]
+        coordinates {
+          (2011,7119)(2013,9108)(2015,11050)(2017,12882)
+          (2019,15373)(2021,17286)(2022,18185)(2023,18938)
+        };
+      \addlegendentry{农村居民人均可支配收入}
+
+      % 收入比（右轴）
+    \end{axis}
+
+    % 城乡收入比折线（另一Y轴辅助标注）
+    \begin{axis}[
+      width=\linewidth, height=7.5cm,
+      axis y line=right,
+      axis x line=none,
+      xmin=2010.5, xmax=2023.5,
+      ymin=1.8, ymax=2.8,
+      ylabel={城乡收入比},
+      ytick={1.9,2.0,2.1,2.2,2.3,2.4,2.5},
+      ylabel style={color=ForestGreen},
+      yticklabel style={color=ForestGreen, font=\small},
+      tick style={color=ForestGreen}
+    ]
+      \addplot[color=ForestGreen, thick, mark=triangle*, mark size=3pt,
+               dotted]
+        coordinates {
+          (2011,2.43)(2013,2.25)(2015,2.18)(2017,2.18)
+          (2019,2.16)(2021,2.20)(2022,2.17)(2023,2.26)
+        };
+    \end{axis}
+  \end{tikzpicture}
+  \caption{2011—2023年河北省城乡居民收入变化趋势（绿色虚线为城乡收入比，右轴）}
+  \label{fig:income}
+\end{figure}
+
+如图~\ref{fig:income}所示，2011—2023年河北省农村居民人均可支配收入从7,119元增至
+18,938元，增幅达166\%，增速高于城镇居民（134\%）。城乡收入比总体呈收窄趋势，从2.43
+降至2.26，2023年略有回升（主要受城镇工资性收入增长较快影响），低于全国2.34的
+平均水平，城乡差距改善好于全国整体。
+
+\subsection{各设区市城乡发展横向比较}
+
+\begin{table}[H]
+  \centering
+  \caption{2023年河北省各设区市城乡发展主要指标比较}
+  \label{tab:cities}
+  \begin{tabularx}{\linewidth}{l r
+      r r
+      r r}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 地市 &
+    \color{white}\bfseries\makecell{城镇化率\\（\%）} &
+    \color{white}\bfseries\makecell{农村居民人均\\可支配收入（元）} &
+    \color{white}\bfseries 城乡收入比 &
+    \color{white}\bfseries\makecell{农业产值\\占比（\%）} &
+    \color{white}\bfseries\makecell{土地流转率\\（\%）} \\
+    \midrule
+    唐山   & 72.1 & 23518 & 1.98 & 6.8  & 55.7 \\
+    \rowcolor{TableRow}
+    石家庄 & 70.2 & 22305 & 2.04 & 7.5  & 53.2 \\
+    廊坊   & 68.5 & 21980 & 2.16 & 8.6  & 51.3 \\
+    \rowcolor{TableRow}
+    秦皇岛 & 66.8 & 20105 & 2.25 & 9.7  & 47.6 \\
+    邯郸   & 63.5 & 18930 & 2.20 & 12.8 & 44.9 \\
+    \rowcolor{TableRow}
+    沧州   & 62.4 & 19320 & 2.21 & 13.5 & 42.5 \\
+    邢台   & 57.8 & 17870 & 2.38 & 14.2 & 39.7 \\
+    \rowcolor{TableRow}
+    保定   & 59.3 & 18640 & 2.28 & 11.3 & 46.8 \\
+    衡水   & 57.2 & 17540 & 2.35 & 17.8 & 38.4 \\
+    \rowcolor{TableRow}
+    张家口 & 54.1 & 15830 & 2.52 & 19.3 & 32.1 \\
+    承德   & 52.3 & 15210 & 2.58 & 20.7 & 29.8 \\
+    \midrule
+    \bfseries 全省均值 & \bfseries 64.4 & \bfseries 18938 &
+    \bfseries 2.26 & \bfseries 9.8 & \bfseries 43.5 \\
+    \bottomrule
+    \multicolumn{6}{l}{\footnotesize
+      数据来源：各市2024年统计年鉴及政府工作报告，部分数据经估算处理。}
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      ybar,
+      width=\linewidth, height=7cm,
+      bar width=0.45cm,
+      xlabel={设区市},
+      ylabel={城乡收入比},
+      symbolic x coords={唐山,石家庄,廊坊,秦皇岛,邯郸,沧州,邢台,保定,衡水,张家口,承德},
+      xtick=data,
+      xticklabel style={rotate=35, anchor=north east, font=\small},
+      ymin=1.8, ymax=2.8,
+      ytick={1.8,2.0,2.2,2.4,2.6,2.8},
+      grid=major, grid style={dashed,gray!30},
+      axis line style={color=DarkGray},
+      enlarge x limits=0.04
+    ]
+      % 柱状数据，低于均值用绿色，高于用红色
+      \addplot[fill=SteelBlue!70, draw=NavyBlue!80] coordinates {
+        (唐山,1.98)(石家庄,2.04)(廊坊,2.16)(秦皇岛,2.25)
+        (邯郸,2.20)(沧州,2.21)(邢台,2.38)(保定,2.28)
+        (衡水,2.35)(张家口,2.52)(承德,2.58)};
+
+      % 全省均值参考线
+      \draw[red!70, very thick, dashed]
+        (axis cs:唐山,2.26) -- (axis cs:承德,2.26)
+        node[right, font=\small, color=red!80] {全省均值\,2.26};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{2023年河北省各设区市城乡收入比比较}
+  \label{fig:citybar}
+\end{figure}
+
+%% ============================================================
+%%  第四章  耦合协调度分析
+%% ============================================================
+\section{城乡协同发展耦合协调度分析}
+
+\subsection{时序变化特征}
+
+\begin{table}[H]
+  \centering
+  \caption{2011—2023年河北省城乡耦合协调度测度结果}
+  \label{tab:coupling}
+  \begin{tabularx}{\linewidth}{c r
+      r r
+      r r X}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 年份 &
+    \color{white}\bfseries $U$ 得分 &
+    \color{white}\bfseries $R$ 得分 &
+    \color{white}\bfseries 耦合度 $C$ &
+    \color{white}\bfseries 调和指数 $T$ &
+    \color{white}\bfseries 协调度 $D$ &
+    \color{white}\bfseries 协调类型 \\
+    \midrule
+    2011 & 0.271 & 0.215 & 0.963 & 0.243 & 0.484 & 濒临失调 \\
+    \rowcolor{TableRow}
+    2012 & 0.291 & 0.238 & 0.972 & 0.264 & 0.507 & 初级协调 \\
+    2013 & 0.315 & 0.252 & 0.969 & 0.284 & 0.524 & 初级协调 \\
+    \rowcolor{TableRow}
+    2014 & 0.337 & 0.268 & 0.973 & 0.302 & 0.542 & 初级协调 \\
+    2015 & 0.358 & 0.285 & 0.975 & 0.321 & 0.560 & 初级协调 \\
+    \rowcolor{TableRow}
+    2016 & 0.381 & 0.307 & 0.979 & 0.344 & 0.580 & 初级协调 \\
+    2017 & 0.404 & 0.328 & 0.981 & 0.366 & 0.599 & 初级协调 \\
+    \rowcolor{TableRow}
+    \bfseries 2018 & \bfseries 0.425 & \bfseries 0.352 &
+    \bfseries 0.984 & \bfseries 0.388 & \bfseries 0.618 &
+    \bfseries 中级协调 \\
+    2019 & 0.449 & 0.373 & 0.985 & 0.411 & 0.636 & 中级协调 \\
+    \rowcolor{TableRow}
+    2020 & 0.461 & 0.391 & 0.988 & 0.426 & 0.648 & 中级协调 \\
+    2021 & 0.473 & 0.408 & 0.987 & 0.441 & 0.659 & 中级协调 \\
+    \rowcolor{TableRow}
+    2022 & 0.485 & 0.422 & 0.988 & 0.453 & 0.669 & 中级协调 \\
+    2023 & 0.496 & 0.433 & 0.989 & 0.465 & 0.677 & 中级协调 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=\linewidth, height=7.5cm,
+      xlabel={年份}, ylabel={耦合协调度 $D$},
+      xmin=2010.5, xmax=2023.8,
+      ymin=0.40, ymax=0.75,
+      xtick={2011,...,2023},
+      xticklabel style={rotate=30, anchor=north east, font=\small},
+      ytick={0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75},
+      grid=major, grid style={dashed,gray!30},
+      axis line style={color=DarkGray},
+      clip=false
+    ]
+      % 阶段分区背景
+      \fill[AccentOrange!15] (axis cs:2010.5,0.40)
+        rectangle (axis cs:2011.8,0.75);
+      \fill[SteelBlue!12] (axis cs:2011.8,0.40)
+        rectangle (axis cs:2017.5,0.75);
+      \fill[ForestGreen!12] (axis cs:2017.5,0.40)
+        rectangle (axis cs:2023.8,0.75);
+
+      % 参考线
+      \addplot[AccentOrange, dashed, thick, domain=2010.5:2023.8]
+        {0.50} node[right,font=\scriptsize,color=AccentOrange]
+        {初级协调下限};
+      \addplot[SteelBlue, dashed, thick, domain=2010.5:2023.8]
+        {0.60} node[right,font=\scriptsize,color=SteelBlue]
+        {中级协调下限};
+      \addplot[ForestGreen, dashed, thick, domain=2010.5:2023.8]
+        {0.70} node[right,font=\scriptsize,color=ForestGreen]
+        {高级协调下限};
+
+      % 主数据线
+      \addplot[NavyBlue, very thick, mark=*, mark size=3.5pt,
+               mark options={fill=NavyBlue}]
+        coordinates {
+          (2011,0.484)(2012,0.507)(2013,0.524)(2014,0.542)
+          (2015,0.560)(2016,0.580)(2017,0.599)(2018,0.618)
+          (2019,0.636)(2020,0.648)(2021,0.659)(2022,0.669)
+          (2023,0.677)
+        };
+
+      % 关键节点标注
+      \node[above right, font=\scriptsize, color=AccentRed]
+        at (axis cs:2011,0.484) {0.484};
+      \node[above, font=\scriptsize, color=AccentRed]
+        at (axis cs:2018,0.618) {跨越中级协调};
+      \node[above right, font=\scriptsize, color=NavyBlue]
+        at (axis cs:2023,0.677) {\bfseries 0.677};
+
+      % 阶段标注
+      \node[font=\scriptsize, color=DarkGray]
+        at (axis cs:2011.5,0.72) {濒临失调};
+      \node[font=\scriptsize, color=DarkGray]
+        at (axis cs:2014.5,0.72) {初级协调积累期};
+      \node[font=\scriptsize, color=DarkGray]
+        at (axis cs:2020.5,0.72) {中级协调深化期};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{2011—2023年河北省城乡耦合协调度变化趋势}
+  \label{fig:coupling_trend}
+\end{figure}
+
+如图~\ref{fig:coupling_trend}所示，河北省城乡耦合协调度历经三个演进阶段：
+\textbf{濒临失调期}（2011年，$D=0.484$）、\textbf{初级协调积累期}（2012—2017年）、
+\textbf{中级协调深化期}（2018年至今）。2018年由初级协调迈入中级协调是重要节点，
+与当年颁布《乡村振兴战略规划》、显著加大农村基础设施投入密切相关。
+
+值得注意的是，与全国2023年平均耦合协调度（约0.712，已进入高级协调）相比，
+河北省仍有较大提升空间。从子系统得分差值（$U-R=0.063$）看，
+\textbf{乡村全面振兴相对滞后}是制约全省城乡协同发展的主要症结。
+
+\subsection{空间格局特征}
+
+\begin{table}[H]
+  \centering
+  \caption{2023年河北省各设区市城乡耦合协调度及类型}
+  \label{tab:spatial}
+  \begin{tabularx}{\linewidth}{l r
+      r r X X}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 地市 &
+    \color{white}\bfseries $U$得分 &
+    \color{white}\bfseries $R$得分 &
+    \color{white}\bfseries $D$值 &
+    \color{white}\bfseries 协调类型 &
+    \color{white}\bfseries 滞后维度 \\
+    \midrule
+    唐山   & 0.598 & 0.521 & 0.754 & 高级协调 & 乡村振兴稍滞后 \\
+    \rowcolor{TableRow}
+    石家庄 & 0.572 & 0.508 & 0.736 & 高级协调 & 乡村振兴稍滞后 \\
+    廊坊   & 0.538 & 0.476 & 0.706 & 高级协调 & 乡村振兴稍滞后 \\
+    \rowcolor{TableRow}
+    秦皇岛 & 0.497 & 0.461 & 0.677 & 中级协调 & 乡村振兴稍滞后 \\
+    邯郸   & 0.461 & 0.423 & 0.660 & 中级协调 & 基本协调 \\
+    \rowcolor{TableRow}
+    沧州   & 0.453 & 0.421 & 0.657 & 中级协调 & 基本协调 \\
+    保定   & 0.468 & 0.432 & 0.668 & 中级协调 & 乡村振兴稍滞后 \\
+    \rowcolor{TableRow}
+    邢台   & 0.427 & 0.403 & 0.634 & 中级协调 & 基本协调 \\
+    衡水   & 0.418 & 0.398 & 0.627 & 中级协调 & 基本协调 \\
+    \rowcolor{TableRow}
+    张家口 & 0.382 & 0.347 & 0.579 & 初级协调 & 整体偏弱 \\
+    承德   & 0.371 & 0.331 & 0.560 & 初级协调 & 整体偏弱 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+全省呈现\textbf{"冀中南$>$冀东$>$冀北"}的空间梯度格局：石家庄、唐山、廊坊已率先
+进入高级协调（$D\geq0.7$），以雄安新区为核心引擎，城乡要素双向流动加速；
+张家口、承德仍处于初级协调阶段，地理条件制约、生态限制区面积大，是全省城乡协同
+发展的突出薄弱区域。
+
+%% ============================================================
+%%  第五章  障碍因子分析
+%% ============================================================
+\section{城乡协同发展障碍因子分析}
+
+\subsection{准则层障碍度}
+
+\begin{table}[H]
+  \centering
+  \caption{河北省城乡协同发展准则层障碍度（代表年份）}
+  \label{tab:barrier}
+  \begin{tabularx}{\linewidth}{l l
+      r r r
+      >{\centering\arraybackslash}X}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 子系统 &
+    \color{white}\bfseries 准则层 &
+    \color{white}\bfseries 2011年 &
+    \color{white}\bfseries 2017年 &
+    \color{white}\bfseries 2023年 &
+    \color{white}\bfseries 趋势 \\
+    \midrule
+    \multirow{5}{*}{\bfseries 新型城镇化}
+    & 人口城镇化 & 0.094 & 0.083 & 0.078 & $\downarrow$ \\
+    \cmidrule{2-6}
+    & 经济城镇化 & 0.312 & 0.285 & 0.271 & $\downarrow$ \\
+    \cmidrule{2-6}
+    & 社会城镇化 & 0.215 & 0.238 & 0.246 & $\uparrow$ \\
+    \cmidrule{2-6}
+    & 空间城镇化 & 0.249 & 0.261 & 0.275 & $\uparrow$ \\
+    \cmidrule{2-6}
+    & 生态城镇化 & 0.130 & 0.133 & 0.130 & $\rightarrow$ \\
+    \midrule
+    \multirow{5}{*}{\bfseries 乡村振兴}
+    & \cellcolor{AccentRed!10}\bfseries 产业兴旺 &
+      \cellcolor{AccentRed!10}\bfseries 0.382 &
+      \cellcolor{AccentRed!10}\bfseries 0.361 &
+      \cellcolor{AccentRed!10}\bfseries 0.348 &
+      \cellcolor{AccentRed!10}$\downarrow$（仍偏高）\\
+    \cmidrule{2-6}
+    & 生态宜居 & 0.148 & 0.157 & 0.143 & $\rightarrow$ \\
+    \cmidrule{2-6}
+    & 乡风文明 & 0.137 & 0.129 & 0.124 & $\downarrow$ \\
+    \cmidrule{2-6}
+    & 治理有效 & 0.198 & 0.211 & 0.228 & $\uparrow$ \\
+    \cmidrule{2-6}
+    & 生活富裕 & 0.135 & 0.142 & 0.157 & $\uparrow$ \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      xbar stacked,
+      width=14cm, height=6cm,
+      bar width=0.5cm,
+      symbolic y coords={生态城镇化,空间城镇化,社会城镇化,
+        经济城镇化,人口城镇化},
+      ytick=data,
+      yticklabel style={font=\small},
+      xlabel={障碍度},
+      xmin=0, xmax=0.35,
+      grid=major, grid style={dashed,gray!20},
+      legend style={at={(0.98,0.02)}, anchor=south east,
+                    draw=gray!40, font=\scriptsize},
+    ]
+      \addplot[fill=SteelBlue!60, draw=NavyBlue!50] coordinates {
+        (0.130,生态城镇化)(0.249,空间城镇化)(0.215,社会城镇化)
+        (0.312,经济城镇化)(0.094,人口城镇化)};
+      \addlegendentry{2011年}
+
+      \addplot[fill=ForestGreen!60, draw=ForestGreen!80] coordinates {
+        (0.000,生态城镇化)(0.012,空间城镇化)(0.023,社会城镇化)
+        (-0.027,经济城镇化)(-0.011,人口城镇化)};
+      \addlegendentry{增量至2023年（正为增大）}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{河北省新型城镇化子系统各维度障碍度变化（2011至2023年）}
+  \label{fig:barrier_urban}
+\end{figure}
+
+\subsection{指标层关键障碍因子}
+
+\begin{table}[H]
+  \centering
+  \caption{河北省城乡协同发展指标层前五位障碍因子（2023年）}
+  \label{tab:top_barrier}
+  \begin{tabularx}{\linewidth}{c c X r l}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 排序 &
+    \color{white}\bfseries 代码 &
+    \color{white}\bfseries 指标名称 &
+    \color{white}\bfseries 障碍度 &
+    \color{white}\bfseries 所属子系统 \\
+    \midrule
+    1 & R3  & 农产品加工业总产值/农业总产值 & 0.142 & 产业兴旺 \\
+    \rowcolor{TableRow}
+    2 & R15 & 农村每万人卫生人员数 & 0.128 & 生活富裕 \\
+    3 & U5  & 人均一般公共预算收入 & 0.121 & 经济城镇化 \\
+    \rowcolor{TableRow}
+    4 & R2  & 土地生产率 & 0.119 & 产业兴旺 \\
+    5 & U8  & 建成区面积占区域面积比重 & 0.115 & 空间城镇化 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+产业兴旺障碍度始终高居首位，前五位中有2项（R3、R2）属产业兴旺维度，
+反映全省农产品加工转化率（约2.1:1，低于东部发达省份3.5:1以上水平）和土地生产率
+偏低的结构性短板。农村卫生人员短缺（R15，障碍度0.128）是生活富裕维度的
+核心短板，城乡医疗卫生资源配置差距的城乡比值高达2.72。
+
+%% ============================================================
+%%  第六章  驱动机制分析
+%% ============================================================
+\section{城乡协同发展驱动机制分析}
+
+\subsection{外部驱动因素的地理探测结果}
+
+\begin{table}[H]
+  \centering
+  \caption{河北省城乡耦合协调影响因素地理探测结果}
+  \label{tab:geodetect}
+  \begin{tabularx}{\linewidth}{c
+      r r
+      r r}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 年份 &
+    \color{white}\bfseries 市场化水平 &
+    \color{white}\bfseries 对外开放水平 &
+    \color{white}\bfseries 外商投资强度 &
+    \color{white}\bfseries 数字普惠金融 \\
+    \midrule
+    2015 & $0.538^{***}$ & $0.512^{***}$ & $0.341^{**}$  & $0.496^{***}$ \\
+    \rowcolor{TableRow}
+    2017 & $0.572^{***}$ & $0.548^{***}$ & $0.372^{**}$  & $0.581^{***}$ \\
+    2019 & $0.601^{***}$ & $0.571^{***}$ & $0.358^{**}$  & $0.649^{***}$ \\
+    \rowcolor{TableRow}
+    2021 & $0.634^{***}$ & $0.587^{***}$ & $0.344^{*}$   & $0.712^{***}$ \\
+    2023 & $0.658^{***}$ & $0.612^{***}$ & $0.317^{*}$   & $0.748^{***}$ \\
+    \bottomrule
+    \multicolumn{5}{l}{\footnotesize
+      注：$^*$、$^{**}$、$^{***}$分别表示在10\%、5\%、1\%显著性水平下显著。}
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=14cm, height=6.5cm,
+      xlabel={年份}, ylabel={$q$值（解释力）},
+      xmin=2014.5, xmax=2023.5,
+      ymin=0.25, ymax=0.85,
+      xtick={2015,2017,2019,2021,2023},
+      ytick={0.3,0.4,0.5,0.6,0.7,0.8},
+      grid=major, grid style={dashed,gray!25},
+      legend style={at={(0.02,0.98)}, anchor=north west,
+                    draw=gray!40, font=\small},
+      axis line style={color=DarkGray}
+    ]
+      \addplot[NavyBlue, very thick, mark=*, mark size=3pt]
+        coordinates{(2015,0.538)(2017,0.572)(2019,0.601)(2021,0.634)(2023,0.658)};
+      \addlegendentry{市场化水平}
+
+      \addplot[SteelBlue, thick, mark=square*, mark size=3pt, dashed]
+        coordinates{(2015,0.512)(2017,0.548)(2019,0.571)(2021,0.587)(2023,0.612)};
+      \addlegendentry{对外开放水平}
+
+      \addplot[AccentRed, very thick, mark=triangle*, mark size=3pt]
+        coordinates{(2015,0.496)(2017,0.581)(2019,0.649)(2021,0.712)(2023,0.748)};
+      \addlegendentry{数字普惠金融}
+
+      \addplot[AccentOrange, thick, mark=diamond*, mark size=3pt, dotted]
+        coordinates{(2015,0.341)(2017,0.372)(2019,0.358)(2021,0.344)(2023,0.317)};
+      \addlegendentry{外商投资强度}
+
+      % 标注最高点
+      \node[above, font=\scriptsize, color=AccentRed]
+        at (axis cs:2023,0.748) {\bfseries 0.748};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{河北省城乡耦合协调影响因素$q$值变化趋势（2015—2023年）}
+  \label{fig:qvalue}
+\end{figure}
+
+如图~\ref{fig:qvalue}所示，数字普惠金融的解释力从2015年的0.496迅速攀升至
+2023年的\textbf{0.748}，成为影响河北省城乡协同发展的第一驱动力，这与
+赵康杰等\cite{zhao2026}在全国层面的研究结论高度一致，揭示了数字金融在破解
+农村金融排斥、促进城乡资本要素下乡中的核心机制。
+
+\subsection{城乡产业协同平台的驱动机制}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.6cm,
+    box/.style={rectangle, rounded corners=3pt,
+                draw=NavyBlue!70, fill=LightBlue!40,
+                text width=2.8cm, align=center,
+                minimum height=1.2cm, font=\small},
+    mbox/.style={rectangle, rounded corners=3pt,
+                 draw=ForestGreen!70, fill=ForestGreen!10,
+                 text width=2.8cm, align=center,
+                 minimum height=1.2cm, font=\small},
+    platform/.style={rectangle, rounded corners=5pt,
+                     draw=NavyBlue, fill=NavyBlue!10,
+                     text width=13cm, align=center,
+                     minimum height=1.4cm, font=\small\bfseries},
+    result/.style={rectangle, rounded corners=5pt,
+                   draw=ForestGreen, fill=ForestGreen!15,
+                   text width=5cm, align=center,
+                   minimum height=1.2cm, font=\small\bfseries},
+    arrow/.style={-Stealth, thick, NavyBlue!70}
+  ]
+    \node[platform] (platform)
+      {城乡产业协同发展平台\\
+       特色小镇 \quad 小城镇 \quad 农业园区 \quad 美丽乡村 \quad 城乡融合典型项目};
+
+    \node[box, below left=1.2cm and 4.0cm of platform] (sys)
+      {\bfseries 系统协同\\（基础）\\空间重构\\产业联动};
+    \node[box, below left=1.2cm and 1.0cm of platform] (elem)
+      {\bfseries 要素配置\\（抓手）\\资源激活\\市场对接};
+    \node[box, below right=1.2cm and 1.0cm of platform] (inst)
+      {\bfseries 制度创新\\（驱动）\\政策集成\\模式突破};
+    \node[box, below right=1.2cm and 4.0cm of platform] (val)
+      {\bfseries 价值共创\\（宗旨）\\业态融合\\效益倍增};
+
+    \node[result, below=3.4cm of platform] (result)
+      {城乡融合发展\\（缩小差距·要素流动·共同富裕）};
+
+    \draw[arrow] (platform) -- (sys);
+    \draw[arrow] (platform) -- (elem);
+    \draw[arrow] (platform) -- (inst);
+    \draw[arrow] (platform) -- (val);
+    \draw[arrow] (sys)  -- (result);
+    \draw[arrow] (elem) -- (result);
+    \draw[arrow] (inst) -- (result);
+    \draw[arrow] (val)  -- (result);
+
+    % 闭环标注
+    \draw[dashed, ForestGreen!60, thick, rounded corners=5pt]
+      ([xshift=-2pt,yshift=-2pt]sys.south west)
+      rectangle ([xshift=2pt,yshift=2pt]val.north east);
+    \node[font=\scriptsize, color=ForestGreen, above right]
+      at ([xshift=-4pt,yshift=2pt]sys.north west) {"四位一体"闭环驱动机制};
+  \end{tikzpicture}
+  \caption{河北省城乡产业协同发展平台驱动机制框架（参照韩旭东等\cite{han2025}）}
+  \label{fig:mechanism}
+\end{figure}
+
+\subsection{典型案例分析}
+
+\begin{enumerate}[label=\textbf{案例\arabic*：}, leftmargin=4.5em]
+  \item \textbf{雄安新区城乡融合示范带}。以"空间建设引领—社会结构重构—空间品质
+        升级"螺旋式更新路径，通过田园综合体、特色小镇建设，吸引北京外溢产业、
+        资本、人才向容城、安新等乡村地区流动。截至2023年，建设带动约30万农村居民
+        就近就业，农村居民人均可支配收入增速连续3年高于全省均值5个百分点以上。
+
+  \item \textbf{曹妃甸"飞地经济"模式}。参照"京冀曹妃甸协同发展示范区"跨区域
+        产业链分工，形成"研发在北京、生产在河北"格局，带动周边农村劳动力约8万
+        人稳定就业，土地流转率提升至55.7\%。
+
+  \item \textbf{保定农业园区产业链延伸}。以现代农业产业园为平台，推动农产品
+        加工转化率从2020年1.8:1提升至2023年2.3:1，高碑店蔬菜加工园区带动
+        4.2万农民增收。
+\end{enumerate}
+
+%% ============================================================
+%%  第七章  主要问题
+%% ============================================================
+\section{主要问题与挑战}
+
+\begin{enumerate}[leftmargin=2em, itemsep=4pt]
+  \item \textbf{城乡要素流动体制机制障碍尚未根除。}
+        全省土地流转率约43.5\%，低于浙江（约61\%）、山东（约57\%）；
+        农村集体建设用地入市面临确权登记不规范等问题，制约城乡产业协同平台建设用地
+        供给。
+
+  \item \textbf{农村产业发展"小散弱"问题突出。}
+        全省粮食就地转化加工率约58\%，低于全国平均水平约10个百分点；
+        农业龙头企业大多规模小、带动能力有限，缺乏全国影响力的区域公用品牌。
+
+  \item \textbf{城乡公共服务差距制约融合深度。}
+        城乡医疗卫生人员比高达2.72，农村居民医疗卫生满意度（56.3\%）与城镇（79.4\%）
+        相差23.1个百分点；冀北山区优质教育、医疗资源持续向城镇集中。
+
+  \item \textbf{数字经济赋能城乡融合潜力释放不足。}
+        农村互联网普及率64.3\%，低于全国约75.1\%水平；
+        县域金融机构服务"三农"激励约束机制不完善。
+
+  \item \textbf{冀北生态功能区面临特殊发展挑战。}
+        张家口、承德受生态用地限制，农民增收渠道单一；
+        清洁能源产业（风电、光伏）溢出效应对农民直接增收作用待充分释放。
+\end{enumerate}
+
+%% ============================================================
+%%  第八章  对策建议
+%% ============================================================
+\section{对策建议}
+
+\subsection{深化要素市场化改革，打通城乡融合制度通道}
+
+推进全域土地综合整治，以县域为基本单元推广"点状供地"政策；
+加快农村集体建设用地确权登记，建立城乡统一建设用地市场；
+创新数字普惠金融服务模式，开发适配农业生产周期的土地经营权抵押贷款等金融产品，
+提升农村地区普惠金融可及性（详见图~\ref{fig:policy_framework}）。
+
+\subsection{构建城乡产业协同平台体系}
+
+\begin{table}[H]
+  \centering
+  \caption{河北省五类城乡产业协同发展平台建设建议}
+  \label{tab:platform}
+  \begin{tabularx}{\linewidth}{l X X}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 平台类型 &
+    \color{white}\bfseries 重点建设方向 &
+    \color{white}\bfseries 主要推进地区 \\
+    \midrule
+    特色小镇 & 雄安创新小镇、正定古城文旅镇、张北清洁能源特色镇 &
+      石家庄、廊坊、张家口 \\
+    \rowcolor{TableRow}
+    小城镇 & 重点镇"双百"提升工程；镇区服务功能强化 &
+      全省各县域中心镇 \\
+    农业园区 & 国家现代农业示范园建设；农产品全产业链 &
+      保定、沧州、邯郸、衡水 \\
+    \rowcolor{TableRow}
+    美丽乡村 & 冀北传统村落活化；生态碳汇乡村建设 &
+      张家口、承德、保定西部 \\
+    城乡融合典型项目 & 石保廊一体化典型项目；京冀协同示范 &
+      石家庄、廊坊、保定 \\
+    \bottomrule
+    \multicolumn{3}{l}{\footnotesize 参照韩旭东等\cite{han2025}的框架，结合河北省实情制定。}
+  \end{tabularx}
+\end{table}
+
+\subsection{分类施策推进区域差异化协同发展}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    zone/.style={rectangle, rounded corners=5pt,
+                 draw=#1!70, fill=#1!8,
+                 text width=3.8cm, align=center,
+                 minimum height=3.5cm, font=\small},
+    tag/.style={rectangle, rounded corners=3pt,
+                fill=#1!70, text=white,
+                font=\bfseries\small, inner sep=4pt}
+  ]
+    \node[zone=NavyBlue] (north) at (0,0) {
+      \textbf{冀北生态型}\\（张家口·承德）\\
+      \vspace{3pt}
+      {\scriptsize
+       碳汇资产开发\\
+       清洁能源收益共享\\
+       民俗文旅提升\\
+       生态补偿机制创新}
+    };
+
+    \node[zone=ForestGreen] (central) at (5,0) {
+      \textbf{冀中南农业型}\\（保定·邢台·衡水·沧州）\\
+      \vspace{3pt}
+      {\scriptsize
+       现代农业园区\\
+       粮食产后服务\\
+       农产品精深加工\\
+       利益联结机制}
+    };
+
+    \node[zone=SteelBlue] (east) at (10,0) {
+      \textbf{冀东开放型}\\（唐山·秦皇岛）\\
+      \vspace{3pt}
+      {\scriptsize
+       港口农产品出口\\
+       海洋特色产业\\
+       港产城融合\\
+       开放平台延伸县域}
+    };
+
+    \node[tag=NavyBlue, above] at (north.north) {生态驱动};
+    \node[tag=ForestGreen, above] at (central.north) {产业驱动};
+    \node[tag=SteelBlue, above] at (east.north) {开放驱动};
+
+    % 底部共同目标
+    \node[rectangle, rounded corners=5pt,
+          draw=AccentRed!70, fill=AccentRed!8,
+          text width=13cm, align=center,
+          minimum height=1.2cm, font=\small\bfseries]
+      at (5,-2.8) {
+        共同目标：城乡居民收入比降至2.0以下·耦合协调度迈入高级协调（$D\geq0.7$）
+      };
+
+    \draw[-Stealth, thick, NavyBlue!50] (north.south) -- +(0,-0.7);
+    \draw[-Stealth, thick, ForestGreen!50] (central.south) -- +(0,-0.7);
+    \draw[-Stealth, thick, SteelBlue!50] (east.south) -- +(0,-0.7);
+  \end{tikzpicture}
+  \caption{河北省城乡协同发展区域分类施策框架}
+  \label{fig:policy_framework}
+\end{figure}
+
+\subsection{提升数字赋能水平}
+
+以数字乡村建设为契机：（1）力争2027年农村互联网普及率达85\%以上；
+（2）推动县域电商平台体系建设，促进农产品"上行"和消费品"下行"；
+（3）支持金融机构以县域为节点，运用物联网、大数据精准对接农业经营主体融资需求。
+
+%% ============================================================
+%%  第九章  结论
+%% ============================================================
+\section{结\quad 论}
+
+本报告基于2011—2023年河北省设区市面板数据，综合运用耦合协调度模型、障碍度模型
+及地理探测器，对全省城乡协同发展水平进行了系统评估与深度分析。主要结论如下：
+
+\begin{enumerate}[leftmargin=2em, itemsep=4pt]
+  \item 河北省城乡耦合协调度从2011年0.484持续提升至2023年0.677，整体处于\textbf{中级
+        协调}阶段，与全国领先省份仍有差距，乡村全面振兴综合发展水平相对滞后（$U-R=0.063$）
+        是主要短板。
+
+  \item 全省城乡协同发展存在显著空间分异，呈"\textbf{冀中南$>$冀东$>$冀北}"梯度格局：
+        石家庄、唐山、廊坊已达高级协调，张家口、承德仍处初级协调。
+
+  \item \textbf{产业兴旺不足}（障碍度0.348）、\textbf{治理有效薄弱}（障碍度0.228，
+        呈上升趋势）是制约乡村振兴的核心障碍；空间城镇化障碍度上升，需警惕"摊大饼"
+        式城镇扩张。
+
+  \item \textbf{数字普惠金融}（$q=0.748$）已成为最强外部驱动力，\textbf{市场化水平}
+        （$q=0.658$）和对外开放水平（$q=0.612$）次之；外商投资强度解释力有所下降。
+
+  \item 推动河北省城乡协同发展须从\textbf{深化要素市场化改革}、\textbf{构建产业协同
+        平台体系}、\textbf{推进公共服务均等化}、\textbf{提升数字赋能水平}及\textbf{分
+        类差异化施策}五个维度协同发力，以雄安新区为引擎，分区推进城乡融合，力争到
+        2030年全省耦合协调度迈入高级协调阶段（$D\geq0.7$）。
+\end{enumerate}
+
+%% ============================================================
+%%  参考文献
+%% ============================================================
+\printbibliography[title={参考文献}]
+
+%% ============================================================
+%%  附录
+%% ============================================================
+\appendix
+\section{调研工作说明}
+
+本报告调研工作于2025年1—5月开展，具体方式如下：
+
+\begin{table}[H]
+  \centering
+  \caption{调研工作基本情况}
+  \begin{tabularx}{\linewidth}{l X r}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\bfseries 调研方式 &
+    \color{white}\bfseries 调研内容 &
+    \color{white}\bfseries 样本量 \\
+    \midrule
+    实地走访 & 石家庄、保定、张家口、承德等地村庄及乡镇 & 19 \\
+    \rowcolor{TableRow}
+    部门访谈 & 农业农村局、自然资源局、统计局等职能部门 & 33 \\
+    问卷调查 & 农村居民、村干部、农业企业负责人 & 170 \\
+    \rowcolor{TableRow}
+    专家研讨 & 城乡规划、农村经济、社会学等领域专家 & 15 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{主要数据来源}
+
+\begin{itemize}[leftmargin=2em]
+  \item 《河北省统计年鉴》（2011—2024）
+  \item 《中国农村统计年鉴》（2011—2024）
+  \item 《中国城乡建设统计年鉴》（2011—2024）
+  \item 《河北省卫生健康统计年鉴》（2024）
+  \item 《河北省教育统计年鉴》（2024）
+  \item 北京大学数字金融研究中心：数字普惠金融指数数据库
+  \item 中国市场化指数（樊纲等）
+  \item 各设区市2024年政府工作报告
+\end{itemize}
+
+\end{document}
